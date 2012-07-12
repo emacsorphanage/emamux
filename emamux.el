@@ -119,6 +119,7 @@
         (reverse panes)))))
 
 (defun emamux:send-command ()
+  "Send command to tmux target-session"
   (interactive)
   (unless (emamux:tmux-running-p)
     (error "'tmux' does not run on this machine!!"))
