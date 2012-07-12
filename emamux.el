@@ -126,9 +126,18 @@
     (emamux:send-keys input)
     (setq emamux:last-command input)))
 
+(defun emamux:escape (input)
+  (emamux:escape-quote (emamux:escape-dollar input)))
+
+(defun emamux:escape-quote (input)
+  (replace-regexp-in-string "\\\"" "\\\\\"" input))
+
+(defun emamux:escape-dollar (input)
+  (replace-regexp-in-string "\\$" "\\\\\$" input))
+
 (defun emamux:send-keys (input)
-  (let ((cmd (format "tmux send-keys -t %s '%s' C-m"
-                     (emamux:target-session) input)))
+  (let ((cmd (format "tmux send-keys -t %s \"%s\" C-m"
+                     (emamux:target-session) (emamux:escape input))))
     (unless (= (call-process-shell-command cmd nil nil nil) 0)
       (error "Failed tmux send-keys"))))
 
