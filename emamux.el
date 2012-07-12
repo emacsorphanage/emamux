@@ -87,9 +87,7 @@
       (goto-char (point-min))
       (let (sessions)
         (while (re-search-forward "^\\([^:]+\\):" nil t)
-          (push (buffer-substring-no-properties
-                 (match-beginning 1) (match-end 1))
-                sessions))
+          (push (match-string-no-properties 1) sessions))
         sessions))))
 
 (defun emamux:get-window ()
@@ -101,8 +99,7 @@
       (goto-char (point-min))
       (let (windows)
         (while (re-search-forward "^\\([0-9]+: [^ ]+\\)" nil t)
-          (push (buffer-substring-no-properties
-                 (match-beginning 1) (match-end 1))  windows))
+          (push (match-string-no-properties 1) windows))
         (reverse windows)))))
 
 (defun emamux:get-pane ()
@@ -114,8 +111,7 @@
       (goto-char (point-min))
       (let (panes)
         (while (re-search-forward "^\\([0-9]+\\):" nil t)
-          (push (buffer-substring-no-properties
-                 (match-beginning 1) (match-end 1)) panes))
+          (push (match-string-no-properties 1) panes))
         (reverse panes)))))
 
 (defun emamux:send-command ()
