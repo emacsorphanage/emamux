@@ -134,7 +134,6 @@
 
 (defun emamux:paste-buffer ()
   (let ((cmd (format "tmux paste-buffer -t %s" (emamux:target-session))))
-    (message "cmd is %s" cmd)
     (unless (= (call-process-shell-command cmd nil nil nil) 0)
       (error "Failed tmux paste-buffer"))))
 
