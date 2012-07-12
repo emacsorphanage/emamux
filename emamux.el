@@ -37,6 +37,9 @@
 (defvar emamux:window nil)
 (defvar emamux:pane nil)
 
+(defvar emamux:last-command nil
+  "Last emit command")
+
 (defun emamux:tmux-running-p ()
   (with-temp-buffer
     (= (call-process-shell-command "tmux has-session") 0)))
@@ -122,9 +125,10 @@
   (if (or current-prefix-arg (not (emamux:set-parameters-p)))
       (emamux:set-parameters))
   (let* ((prompt (format "Send to (%s): " (emamux:target-session)))
-         (input (concat (read-string prompt) "\n")))
+         (input (concat (read-string prompt emamux:last-command) "\n")))
     (emamux:set-buffer input)
-    (emamux:paste-buffer)))
+    (emamux:paste-buffer)
+    (setq emamux:last-command input)))
 
 (defun emamux:set-buffer (input)
   (let* ((escaped (replace-regexp-in-string "'" "'\\\\''" input))
