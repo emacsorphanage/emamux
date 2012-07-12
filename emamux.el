@@ -122,20 +122,14 @@
   (if (or current-prefix-arg (not (emamux:set-parameters-p)))
       (emamux:set-parameters))
   (let* ((prompt (format "Send to (%s): " (emamux:target-session)))
-         (input (concat (read-string prompt emamux:last-command) "\n")))
-    (emamux:set-buffer input)
-    (emamux:paste-buffer)
+         (input (read-string prompt emamux:last-command)))
+    (emamux:send-keys input)
     (setq emamux:last-command input)))
 
-(defun emamux:set-buffer (input)
-  (let* ((escaped (replace-regexp-in-string "'" "'\\\\''" input))
-         (cmd (format "tmux set-buffer '%s'" escaped)))
+(defun emamux:send-keys (input)
+  (let ((cmd (format "tmux send-keys -t %s '%s' C-m"
+                     (emamux:target-session) input)))
     (unless (= (call-process-shell-command cmd nil nil nil) 0)
-      (error "Failed tmux set-buffer"))))
-
-(defun emamux:paste-buffer ()
-  (let ((cmd (format "tmux paste-buffer -t %s" (emamux:target-session))))
-    (unless (= (call-process-shell-command cmd nil nil nil) 0)
-      (error "Failed tmux paste-buffer"))))
+      (error "Failed tmux send-keys"))))
 
 ;;; emamux.el ends here
