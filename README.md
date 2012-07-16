@@ -61,6 +61,6 @@ Height of `runner-pane`(Default is 20).
 
     emamux:runner-pane-height
 
-Use nearest pane as `runner pane` instead of spliting pane.
+Use nearest pane as `runner pane` instead of spliting pane(Default is nil).
 
     emamux:use-nearest-pane
