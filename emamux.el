@@ -70,6 +70,9 @@
     (emamux:set-parameter-window)
     (emamux:set-parameter-pane)))
 
+(defun emamux:unset-parameters ()
+  (setq emamux:session nil emamux:window nil emamux:pane nil))
+
 (defun emamux:set-parameters-p ()
   (and emamux:session emamux:window emamux:pane))
 
@@ -138,12 +141,15 @@
   "Send command to tmux target-session"
   (interactive)
   (emamux:check-tmux-running)
-  (if (or current-prefix-arg (not (emamux:set-parameters-p)))
-      (emamux:set-parameters))
-  (let* ((prompt (format "Send to (%s): " (emamux:target-session)))
-         (input  (read-string prompt emamux:last-command)))
-    (emamux:send-keys input)
-    (setq emamux:last-command input)))
+  (condition-case nil
+      (progn
+        (if (or current-prefix-arg (not (emamux:set-parameters-p)))
+            (emamux:set-parameters))
+        (let* ((prompt (format "Send to (%s): " (emamux:target-session)))
+               (input  (read-string prompt emamux:last-command)))
+          (emamux:send-keys input)
+          (setq emamux:last-command input)))
+      (quit (emamux:unset-parameters))))
 
 (defun emamux:escape (input)
   (emamux:escape-quote (emamux:escape-dollar input)))
