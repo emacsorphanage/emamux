@@ -33,9 +33,6 @@
   "tmux manipulation from Emacs"
   :group 'emamux)
 
-(defvar emamux:last-command nil
-  "Last emit command")
-
 (defcustom emamux:default-orientation 'vertical
   "Orientation of spliting runner pane"
   :type '(choice (const :tag "Split pane vertial" vertical)
@@ -51,6 +48,9 @@
   "Use nearest pane for runner pane"
   :type  'boolean
   :group 'emamux)
+
+(defvar emamux:last-command nil
+  "Last emit command")
 
 (defvar emamux:session nil)
 (defvar emamux:window nil)
@@ -189,19 +189,20 @@
     (emamux:send-keys cmd emamux:runner-pane-id)
     (emamux:select-pane current-pane)))
 
-(defun emamux:reset-prompt ()
-  (emamux:send-raw-keys "C-g" emamux:runner-pane-id))
+(defun emamux:reset-prompt (pane)
+  (emamux:send-raw-keys "C-g" pane))
 
 (defun emamux:chdir-pane ()
   (let ((chdir-cmd (format " cd %s" default-directory)))
     (emamux:send-keys chdir-cmd emamux:runner-pane-id)))
 
 (defun emamux:setup-runner-pane ()
-  (if emamux:use-nearest-pane
+  (let ((nearest-pane-id (emamux:nearest-inactive-pane-id)))
+    (if (and emamux:use-nearest-pane nearest-pane-id)
       (progn
-        (emamux:select-pane (emamux:nearest-inactive-pane-id))
-        (emamux:reset-prompt))
-    (emamux:split-runner-pane))
+        (emamux:select-pane nearest-pane-id)
+        (emamux:reset-prompt nearest-pane-id))
+      (emamux:split-runner-pane)))
   (setq emamux:runner-pane-id (emamux:active-pane-id)))
 
 (defun emamux:select-pane (target)
@@ -233,8 +234,9 @@
 
 (defun emamux:nearest-inactive-pane-id ()
   (loop for pane in (emamux:list-panes)
-        when (not (string-match "\\([^ ]+\\) (active)$" pane))
-        return (match-string-no-properties 1 pane)))
+        when (not (string-match "(active)$" pane))
+        return (if (string-match " \\([^ ]+\\)$" pane)
+                   (match-string-no-properties 1 pane))))
 
 (defun emamux:close-runner-pane ()
   (interactive)
