@@ -131,7 +131,7 @@
       (reverse panes))))
 
 (defun emamux:read-command (prompt use-last-cmd)
-  (read-string prompt (and use-last-cmd (emamux:last-command))))
+  (read-string prompt (and use-last-cmd emamux:last-command)))
 
 (defun emamux:check-tmux-running ()
   (unless (emamux:tmux-running-p)
@@ -222,12 +222,10 @@
 
 (defun emamux:list-panes ()
   (with-temp-buffer
-    (let ((ret (call-process-shell-command "tmux list-panes" nil t nil)))
-      (unless (= ret 0)
-        (error (format "Failed: %s" cmd)))
-      (loop initially (goto-char (point-min))
-            while (re-search-forward "^\\(.+\\)$" nil t nil)
-            collect (match-string-no-properties 1)))))
+    (emamux:tmux-run-command "list-panes" t)
+    (loop initially (goto-char (point-min))
+          while (re-search-forward "^\\(.+\\)$" nil t nil)
+          collect (match-string-no-properties 1))))
 
 (defun emamux:active-pane-id ()
   (loop for pane in (emamux:list-panes)
