@@ -177,14 +177,14 @@
 
 (defvar emamux:runner-pane-id nil)
 
-(defun emamux:run-command (cmd)
+(defun emamux:run-command ()
   "Run command"
-  (interactive
-   (list (read-string "Run command: ")))
+  (interactive)
   (emamux:check-tmux-running)
   (unless (emamux:in-tmux-p)
     (error "You are not in 'tmux'"))
-  (let ((current-pane (emamux:active-pane-id)))
+  (let ((cmd (read-string "Run command: "))
+        (current-pane (emamux:active-pane-id)))
     (unless (emamux:runner-alive-p)
       (emamux:setup-runner-pane)
       (emamux:chdir-pane))
