@@ -13,7 +13,7 @@ Introduction
 Requirements
 ------------
 * Emacs 22.1 or higher.
-* tmux 1.6
+* tmux 1.3
 
 
 Basic Usage
