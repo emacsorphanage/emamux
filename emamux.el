@@ -145,8 +145,10 @@
       (progn
         (if (or current-prefix-arg (not (emamux:set-parameters-p)))
             (emamux:set-parameters))
-        (let* ((prompt (format "Send to (%s): " (emamux:target-session)))
+        (let* ((target (emamux:target-session))
+               (prompt (format "Send to (%s): " target))
                (input  (read-string prompt emamux:last-command)))
+          (emamux:reset-prompt target)
           (emamux:send-keys input)
           (setq emamux:last-command input)))
       (quit (emamux:unset-parameters))))
@@ -166,7 +168,7 @@
     (emamux:tmux-run-command cmd)))
 
 (defun emamux:send-raw-keys (input target)
-  (let ((cmd (format "send-keys -t %s %s C-m" target input)))
+  (let ((cmd (format "send-keys -t %s %s" target input)))
     (emamux:tmux-run-command cmd)))
 
 (defun emamux:in-tmux-p ()
@@ -190,7 +192,7 @@
     (emamux:select-pane current-pane)))
 
 (defun emamux:reset-prompt (pane)
-  (emamux:send-raw-keys "C-g" pane))
+  (emamux:send-raw-keys "q C-u" pane))
 
 (defun emamux:chdir-pane ()
   (let ((chdir-cmd (format " cd %s" default-directory)))
