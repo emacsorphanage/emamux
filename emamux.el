@@ -1,4 +1,4 @@
-;;; emamux.el --- tmux manipulation from Emacs
+;;; emamux.el --- Interact with tmux
 
 ;; Copyright (C) 2012 by Syohei YOSHIDA
 
