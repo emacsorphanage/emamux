@@ -285,4 +285,6 @@
   (emamux:check-runner-alive)
   (emamux:tmux-run-command (format "clear-history %s" emamux:runner-pane-id)))
 
+(provide 'emamux)
+
 ;;; emamux.el ends here
