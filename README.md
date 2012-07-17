@@ -3,8 +3,8 @@ emamux.el
 
 Introduction
 ------------
-*tmux* manipulation from Emacs. *emamux.el* is inspired by
-[tslime.vim](https://github.com/kikijump/tslime.vim) and
+**emamux.el** let emacs interact with **tmux**.
+**emamux.el** is inspired by [tslime.vim](https://github.com/kikijump/tslime.vim) and
 [vimux](https://github.com/benmills/vimux/).
 
 *WARNINGS: THIS IS ALPHA VERSION.*
@@ -20,10 +20,13 @@ Basic Usage
 -----------
 
 Send command to specified *target-session*(session:window.pane).
-*target-session* is set as default at first `emamux:send-command` called.
-If you change default *target-session*, you add `C-u` prefix.
 
     M-x emamux:send-command
+
+*target-session* is set as default at first `emamux:send-command` called.
+You can change default *target-session* with `C-u` prefix.
+
+**Following commands can be executed only within tmux**
 
 Run command in a small split pane(`runner pane`) where emacs is in.
 
