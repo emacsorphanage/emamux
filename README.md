@@ -2,7 +2,7 @@ emamux.el
 ==================
 Interact with tmux from Emacs.
 
-![emamux_run_command](https://raw.github.com/syohex/emacs-emamux/master/image/image/run_command_screenshot.png)
+![emamux_run_command](https://github.com/syohex/emacs-emamux/raw/master/image/run_command_screenshot.png)
 
 
 Introduction
