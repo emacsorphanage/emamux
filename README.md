@@ -76,3 +76,4 @@ Use nearest pane as `runner pane` instead of spliting pane(Default is nil).
 Emamux Applications
 -------------------
 * [emamux-perl-test](https://github.com/syohex/emamux-perl-test) a set of commands to easily run perl tests
+* [emamux-ruby-test](https://github.com/syohex/emamux-ruby-test) a set of commands to easily run ruby tests
