@@ -177,7 +177,7 @@
 
 (defvar emamux:runner-pane-id nil)
 
-(defun emamux:run-command (cmd)
+(defun emamux:run-command (cmd &optional cmddir)
   "Run command"
   (interactive
    (list (read-string "Run command: ")))
@@ -187,15 +187,15 @@
   (let ((current-pane (emamux:active-pane-id)))
     (unless (emamux:runner-alive-p)
       (emamux:setup-runner-pane)
-      (emamux:chdir-pane))
+      (emamux:chdir-pane cmddir))
     (emamux:send-keys cmd emamux:runner-pane-id)
     (emamux:select-pane current-pane)))
 
 (defun emamux:reset-prompt (pane)
   (emamux:send-raw-keys "q C-u" pane))
 
-(defun emamux:chdir-pane ()
-  (let ((chdir-cmd (format " cd %s" default-directory)))
+(defun emamux:chdir-pane (dir)
+  (let ((chdir-cmd (format " cd %s" (or dir default-directory))))
     (emamux:send-keys chdir-cmd emamux:runner-pane-id)))
 
 (defun emamux:setup-runner-pane ()
