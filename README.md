@@ -71,3 +71,8 @@ Height of `runner-pane`(Default is 20).
 Use nearest pane as `runner pane` instead of spliting pane(Default is nil).
 
     emamux:use-nearest-pane
+
+
+Emamux Applications
+-------------------
+* [emamux-perl-test](https://github.com/syohex/emamux-perl-test) a set of commands to easily run perl tests
