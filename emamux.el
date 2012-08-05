@@ -20,18 +20,14 @@
 
 ;;; Commentary:
 
-;;; History:
-;; Revision 0.1  2012/07/???? syohex
-;; Initial version
-;;
-
 ;;; Code:
 
 (eval-when-compile (require 'cl))
 
 (defgroup emamux nil
   "tmux manipulation from Emacs"
-  :group 'emamux)
+  :prefix "emamux:"
+  :group 'processes)
 
 (defcustom emamux:default-orientation 'vertical
   "Orientation of spliting runner pane"
