@@ -20,6 +20,16 @@
 
 ;;; Commentary:
 
+;; emamux makes you interact emacs and tmux.
+;; emamux is inspired by `vimux' and `tslime.vim'.
+;;
+;; To use emamux, add the following code into your init.el or .emacs:
+;;
+;;    (require 'emamux)
+;;
+;; Please see https://github.com/syohex/emacs-emamux/
+;; for more information.
+
 ;;; Code:
 
 (eval-when-compile (require 'cl))
@@ -134,7 +144,7 @@
     (error "'tmux' does not run on this machine!!")))
 
 (defun emamux:send-command ()
-  "Send command to tmux target-session"
+  "Send command to target-session of tmux"
   (interactive)
   (emamux:check-tmux-running)
   (condition-case nil
@@ -235,12 +245,14 @@
                    (match-string-no-properties 1 pane))))
 
 (defun emamux:close-runner-pane ()
+  "Close runner pane"
   (interactive)
   (emamux:runner-alive-p)
   (emamux:kill-pane emamux:runner-pane-id)
   (setq emamux:runner-pane-id nil))
 
 (defun emamux:close-panes ()
+  "Close all panes except current pane"
   (interactive)
   (let ((panes (emamux:list-panes)))
     (if (> (length panes) 1)
@@ -266,17 +278,20 @@
     (error "There is no runner pane")))
 
 (defun emamux:inspect-runner ()
+  "Enter copy-mode in runner pane"
   (interactive)
   (emamux:check-runner-alive)
   (emamux:select-pane emamux:runner-pane-id)
   (emamux:tmux-run-command "copy-mode"))
 
 (defun emamux:interrupt-runner ()
+  "Send SIGINT to runner pane"
   (interactive)
   (emamux:check-runner-alive)
   (emamux:send-raw-keys "^c" emamux:runner-pane-id))
 
 (defun emamux:clear-runner-history ()
+  "Clear history of runner pane"
   (interactive)
   (emamux:check-runner-alive)
   (emamux:tmux-run-command (format "clear-history %s" emamux:runner-pane-id)))
