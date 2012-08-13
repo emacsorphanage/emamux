@@ -30,6 +30,13 @@ Send command to specified *target-session*(session:window.pane).
 *target-session* is set as default at first `emamux:send-command` called.
 You can change default *target-session* with `C-u` prefix.
 
+Copy content of (car kill-ring) to tmux buffer
+
+    M-x emamux:copy-kill-ring
+
+You can change buffer index with Numerical Prefix.
+
+
 **Following commands can be executed only within tmux**
 
 Run command in a small split pane(`runner pane`) where emacs is in.
@@ -52,7 +59,7 @@ Interrupt command which is running in `runner-pane`.
 
     M-x emamux:interrupt-runner
 
-Clear tmux history in `runnerr-pane`
+Clear tmux history in `runner-pane`
 
     M-x emamux:clear-runner-history
 

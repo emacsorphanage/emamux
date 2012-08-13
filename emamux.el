@@ -66,9 +66,10 @@
   (= (call-process-shell-command "tmux has-session" nil nil nil) 0))
 
 (defun* emamux:tmux-run-command (cmd &optional (output nil))
-  (let ((cmd (format "tmux %s" cmd)))
-    (unless (= (call-process-shell-command cmd nil output nil) 0)
-      (error (format "Failed: %s" cmd)))))
+  (let* ((cmd (format "tmux %s" cmd))
+         (retval (call-process-shell-command cmd nil output nil)))
+    (unless (= retval 0)
+      (error (format "Failed: %s(status = %d)" cmd retval)))))
 
 (defun emamux:set-parameters ()
   (progn
@@ -159,6 +160,18 @@
           (setq emamux:last-command input)))
       (quit (emamux:unset-parameters))))
 
+(defun emamux:copy-kill-ring (arg)
+  "Set (car kill-ring) to tmux buffer"
+  (interactive "P")
+  (emamux:check-tmux-running)
+  (if (null kill-ring)
+      (error "kill-ring is nil!!"))
+  (let ((index (or (and (consp current-prefix-arg) (car current-prefix-arg))
+                   current-prefix-arg
+                   0))
+        (data (substring-no-properties (car kill-ring))))
+    (emamux:set-buffer data index)))
+
 (defun emamux:escape (input)
   (emamux:escape-quote (emamux:escape-dollar input)))
 
@@ -175,6 +188,16 @@
 
 (defun emamux:send-raw-keys (input target)
   (let ((cmd (format "send-keys -t %s %s" target input)))
+    (emamux:tmux-run-command cmd)))
+
+(defun emamux:buffer-index-option (index)
+  (if (zerop index)
+      ""
+    (format "-b %d" index)))
+
+(defun emamux:set-buffer (data index)
+  (let ((cmd (format "set-buffer %s \"%s\""
+                     (emamux:buffer-index-option index) (emamux:escape data))))
     (emamux:tmux-run-command cmd)))
 
 (defun emamux:in-tmux-p ()
