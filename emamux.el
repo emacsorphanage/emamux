@@ -138,7 +138,7 @@
       (reverse panes))))
 
 (defun emamux:read-command (prompt use-last-cmd)
-  (read-string prompt (and use-last-cmd emamux:last-command)))
+  (read-shell-command prompt (and use-last-cmd emamux:last-command)))
 
 (defun emamux:check-tmux-running ()
   (unless (emamux:tmux-running-p)
@@ -154,7 +154,7 @@
             (emamux:set-parameters))
         (let* ((target (emamux:target-session))
                (prompt (format "Send to (%s): " target))
-               (input  (read-string prompt emamux:last-command)))
+               (input  (emamux:read-command prompt t)))
           (emamux:reset-prompt target)
           (emamux:send-keys input)
           (setq emamux:last-command input)))
@@ -209,7 +209,7 @@
 (defun emamux:run-command (cmd &optional cmddir)
   "Run command"
   (interactive
-   (list (read-string "Run command: ")))
+   (list (emamux:read-command "Run command: " nil)))
   (emamux:check-tmux-running)
   (unless (emamux:in-tmux-p)
     (error "You are not in 'tmux'"))
