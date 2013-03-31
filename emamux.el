@@ -138,7 +138,9 @@
       (reverse panes))))
 
 (defun emamux:read-command (prompt use-last-cmd)
-  (read-shell-command prompt (and use-last-cmd emamux:last-command)))
+  (let ((cmd (read-shell-command prompt (and use-last-cmd emamux:last-command))))
+    (setq emamux:last-command cmd)
+    cmd))
 
 (defun emamux:check-tmux-running ()
   (unless (emamux:tmux-running-p)
@@ -157,8 +159,7 @@
                (prompt (format "Send to (%s): " target))
                (input  (emamux:read-command prompt t)))
           (emamux:reset-prompt target)
-          (emamux:send-keys input)
-          (setq emamux:last-command input)))
+          (emamux:send-keys input)))
       (quit (emamux:unset-parameters))))
 
 ;;;###autoload
@@ -222,6 +223,13 @@
       (emamux:chdir-pane cmddir))
     (emamux:send-keys cmd emamux:runner-pane-id)
     (emamux:select-pane current-pane)))
+
+;;;###autoload
+(defun emamux:run-last-command ()
+  (interactive)
+  (unless emamux:last-command
+    (error "You have never run command"))
+  (emamux:run-command emamux:last-command))
 
 (defun emamux:reset-prompt (pane)
   (emamux:send-raw-keys "q C-u" pane))
