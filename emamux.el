@@ -144,6 +144,7 @@
   (unless (emamux:tmux-running-p)
     (error "'tmux' does not run on this machine!!")))
 
+;;;###autoload
 (defun emamux:send-command ()
   "Send command to target-session of tmux"
   (interactive)
@@ -160,6 +161,7 @@
           (setq emamux:last-command input)))
       (quit (emamux:unset-parameters))))
 
+;;;###autoload
 (defun emamux:copy-kill-ring (arg)
   "Set (car kill-ring) to tmux buffer"
   (interactive "P")
@@ -206,6 +208,7 @@
 
 (defvar emamux:runner-pane-id nil)
 
+;;;###autoload
 (defun emamux:run-command (cmd &optional cmddir)
   "Run command"
   (interactive
@@ -267,6 +270,7 @@
         return (if (string-match " \\([^ ]+\\)$" pane)
                    (match-string-no-properties 1 pane))))
 
+;;;###autoload
 (defun emamux:close-runner-pane ()
   "Close runner pane"
   (interactive)
@@ -274,6 +278,7 @@
   (emamux:kill-pane emamux:runner-pane-id)
   (setq emamux:runner-pane-id nil))
 
+;;;###autoload
 (defun emamux:close-panes ()
   "Close all panes except current pane"
   (interactive)
@@ -300,6 +305,7 @@
   (unless (emamux:runner-alive-p)
     (error "There is no runner pane")))
 
+;;;###autoload
 (defun emamux:inspect-runner ()
   "Enter copy-mode in runner pane"
   (interactive)
@@ -307,12 +313,14 @@
   (emamux:select-pane emamux:runner-pane-id)
   (emamux:tmux-run-command "copy-mode"))
 
+;;;###autoload
 (defun emamux:interrupt-runner ()
   "Send SIGINT to runner pane"
   (interactive)
   (emamux:check-runner-alive)
   (emamux:send-raw-keys "^c" emamux:runner-pane-id))
 
+;;;###autoload
 (defun emamux:clear-runner-history ()
   "Clear history of runner pane"
   (interactive)
