@@ -42,6 +42,10 @@ You can change buffer index with Numerical Prefix.
 
 Run command in a small split pane(`runner pane`) where emacs is in.
 
+#### emamux:run-last-command
+
+Run last command in `runner pane`.
+
 #### emamux:inspect-runner
 
 Move into the `runner pane` and enter the copy mode.
