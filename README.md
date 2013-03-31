@@ -1,12 +1,12 @@
-emamux.el
-==================
+# emamux.el
+
 Interact with tmux from Emacs.
 
-![emamux_run_command](https://github.com/syohex/emacs-emamux/raw/master/image/run_command_screenshot.png)
+![emamux_run_command](image/run_command_screenshot.png)
 
 
-Introduction
-------------
+## Introduction
+
 **emamux.el** let emacs interact with **tmux**.
 **emamux.el** is inspired by [tslime.vim](https://github.com/kikijump/tslime.vim) and
 [vimux](https://github.com/benmills/vimux/).
@@ -20,67 +20,66 @@ Requirements
 * tmux 1.5
 
 
-Basic Usage
------------
+## Basic Usage
+
+#### emamux:send-command
 
 Send command to specified *target-session*(session:window.pane).
-
-    M-x emamux:send-command
 
 *target-session* is set as default at first `emamux:send-command` called.
 You can change default *target-session* with `C-u` prefix.
 
-Copy content of (car kill-ring) to tmux buffer
+#### emamux:copy-kill-ring
 
-    M-x emamux:copy-kill-ring
+Copy content of (car kill-ring) to tmux buffer
 
 You can change buffer index with Numerical Prefix.
 
 
 **Following commands can be executed only within tmux**
 
+#### emamux:run-command
+
 Run command in a small split pane(`runner pane`) where emacs is in.
 
-    M-x emamux:run-command
+#### emamux:inspect-runner
 
 Move into the `runner pane` and enter the copy mode.
 
-    M-x emamux:inspect-runner
+#### emamux:close-runner-pane
 
 Close `runner pane`.
 
-    M-x emamux:close-runner-pane
+#### emamux:close-panes
 
 Close all other panes in current window.
 
-    M-x emamux:close-panes
+#### emamux:interrupt-runner
 
 Interrupt command which is running in `runner-pane`.
 
-    M-x emamux:interrupt-runner
+#### emamux:clear-runner-history
 
 Clear tmux history in `runner-pane`
 
-    M-x emamux:clear-runner-history
 
+## Customize
 
-Customize
----------
+#### emamux:default-orientation
 
 Orientation of split pane, 'vertical or 'horizonal(Default is 'vertical).
 
-    emamux:default-orientation
+#### emamux:runner-pane-height
 
 Height of `runner-pane`(Default is 20).
 
-    emamux:runner-pane-height
+
+#### emamux:use-nearest-pane
 
 Use nearest pane as `runner pane` instead of spliting pane(Default is nil).
 
-    emamux:use-nearest-pane
 
+## Emamux Applications
 
-Emamux Applications
--------------------
 * [emamux-perl-test](https://github.com/syohex/emamux-perl-test) a set of commands to easily run perl tests
 * [emamux-ruby-test](https://github.com/syohex/emamux-ruby-test) a set of commands to easily run ruby tests
