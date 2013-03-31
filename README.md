@@ -22,14 +22,14 @@ Interact with tmux from Emacs.
 
 ## Basic Usage
 
-#### emamux:send-command
+#### `emamux:send-command`
 
 Send command to specified *target-session*(session:window.pane).
 
 *target-session* is set as default at first `emamux:send-command` called.
 You can change default *target-session* with `C-u` prefix.
 
-#### emamux:copy-kill-ring
+#### `emamux:copy-kill-ring`
 
 Copy content of (car kill-ring) to tmux buffer
 
@@ -38,47 +38,47 @@ You can change buffer index with Numerical Prefix.
 
 **Following commands can be executed only within tmux**
 
-#### emamux:run-command
+#### `emamux:run-command`
 
 Run command in a small split pane(`runner pane`) where emacs is in.
 
-#### emamux:run-last-command
+#### `emamux:run-last-command`
 
 Run last command in `runner pane`.
 
-#### emamux:inspect-runner
+#### `emamux:inspect-runner`
 
 Move into the `runner pane` and enter the copy mode.
 
-#### emamux:close-runner-pane
+#### `emamux:close-runner-pane`
 
 Close `runner pane`.
 
-#### emamux:close-panes
+#### `emamux:close-panes`
 
 Close all other panes in current window.
 
-#### emamux:interrupt-runner
+#### `emamux:interrupt-runner`
 
 Interrupt command which is running in `runner-pane`.
 
-#### emamux:clear-runner-history
+#### `emamux:clear-runner-history`
 
 Clear tmux history in `runner-pane`
 
 
 ## Customize
 
-#### emamux:default-orientation
+#### `emamux:default-orientation`
 
 Orientation of split pane, 'vertical or 'horizonal(Default is 'vertical).
 
-#### emamux:runner-pane-height
+#### `emamux:runner-pane-height`
 
 Height of `runner-pane`(Default is 20).
 
 
-#### emamux:use-nearest-pane
+#### `emamux:use-nearest-pane`
 
 Use nearest pane as `runner pane` instead of spliting pane(Default is nil).
 
