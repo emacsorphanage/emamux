@@ -2,6 +2,9 @@
 
 Interact with tmux from Emacs.
 
+
+## Screenshot
+
 ![emamux_run_command](image/run_command_screenshot.png)
 
 
@@ -10,8 +13,6 @@ Interact with tmux from Emacs.
 **emamux.el** let emacs interact with **tmux**.
 **emamux.el** is inspired by [tslime.vim](https://github.com/kikijump/tslime.vim) and
 [vimux](https://github.com/benmills/vimux/).
-
-*WARNINGS: THIS IS ALPHA VERSION.*
 
 
 ## Requirements
@@ -83,7 +84,22 @@ Height of `runner-pane`(Default is 20).
 Use nearest pane as `runner pane` instead of spliting pane(Default is nil).
 
 
+## tmux configuration
+
+It is useful for using `emamux` to show `session name`, `window index` and
+`pane index` in tmux status bar.
+
+```
+# '#S' is session name, '#I' is window index, '#P' is pane index
+set-option -g status-right '[#h###S:#I:#P]'
+```
+
 ## Emamux Applications
 
 * [emamux-perl-test](https://github.com/syohex/emamux-perl-test) a set of commands to easily run perl tests
 * [emamux-ruby-test](https://github.com/syohex/emamux-ruby-test) a set of commands to easily run ruby tests
+
+
+## See Also
+* [vimux](https://github.com/benmills/vimux/)
+* [tslime.vim](https://github.com/kikijump/tslime.vim)
