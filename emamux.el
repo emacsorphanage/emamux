@@ -336,6 +336,13 @@
   (emamux:check-runner-alive)
   (emamux:tmux-run-command (format "clear-history %s" emamux:runner-pane-id)))
 
+;;;###autoload
+(defun emamux:zoom-runner ()
+  "Zoom runner pane. This feature requires tmux 1.8 or higher"
+  (interactive)
+  (emamux:check-runner-alive)
+  (emamux:tmux-run-command (format " resize-pane -Z -t %s" emamux:runner-pane-id)))
+
 (provide 'emamux)
 
 ;;; emamux.el ends here
