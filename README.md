@@ -47,6 +47,10 @@ Run command in a small split pane(`runner pane`) where emacs is in.
 
 Run last command in `runner pane`.
 
+#### `emamux:zoom-runner`
+
+Zoom runner `runner pane`. This command requires tmux 1.8 or higher.
+
 #### `emamux:inspect-runner`
 
 Move into the `runner pane` and enter the copy mode.
