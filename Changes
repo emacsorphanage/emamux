@@ -1,4 +1,7 @@
 Revision history for emamux.el
 
-0.1 2012-08-06
+0.02 2014-01-24
+  - Add zoom runner pane command
+
+0.01 2012-08-06
   - Initial version
