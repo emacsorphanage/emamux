@@ -59,7 +59,9 @@
   :type  'boolean
   :group 'emamux)
 
-(defcustom emamux:completing-read-type 'normal
+(defcustom emamux:completing-read-type (if (featurep 'ido)
+                                           'ido
+                                         'normal)
   "Function type to call for completing read."
   :type '(choice (const :tag "Using completing-read" 'normal)
                  (const :tag "Using ido-completing-read" 'ido)
