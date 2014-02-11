@@ -1,5 +1,10 @@
 Revision history for emamux.el
 
+0.03 2014-02-11
+  - Add completing read function setting
+    normal, ido or helm
+  - use cl-lib instead of cl.el
+
 0.02 2014-01-24
   - Add zoom runner pane command
 
