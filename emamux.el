@@ -1,10 +1,11 @@
 ;;; emamux.el --- Interact with tmux
 
-;; Copyright (C) 2012 by Syohei YOSHIDA
+;; Copyright (C) 2014 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-emamux
 ;; Version: 0.02
+;; Package-Requires: ((cl-lib "0.3"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -33,7 +34,9 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(require 'cl-lib)
+
+(declare-function helm-comp-read "helm")
 
 (defgroup emamux nil
   "tmux manipulation from Emacs"
@@ -58,9 +61,9 @@
 
 (defcustom emamux:completing-read-type 'normal
   "Function type to call for completing read."
-  :type '(choice (const :tag "Using completing-read" normal)
-                 (const :tag "Using ido-completing-read" ido)
-                 (const :tag "Using helm-comp-read" helm))
+  :type '(choice (const :tag "Using completing-read" 'normal)
+                 (const :tag "Using ido-completing-read" 'ido)
+                 (const :tag "Using helm-comp-read" 'helm))
   :group 'emamux)
 
 (defvar emamux:last-command nil
@@ -73,7 +76,7 @@
 (defun emamux:tmux-running-p ()
   (= (call-process-shell-command "tmux has-session" nil nil nil) 0))
 
-(defun* emamux:tmux-run-command (cmd &optional (output nil))
+(cl-defun emamux:tmux-run-command (cmd &optional (output nil))
   (let* ((cmd (format "tmux %s" cmd))
          (retval (call-process-shell-command cmd nil output nil)))
     (unless (= retval 0)
@@ -95,7 +98,7 @@
   (helm-comp-read prompt candidates :must-match must-match))
 
 (defun emamux:select-completing-read-function ()
-  (case emamux:completing-read-type
+  (cl-case emamux:completing-read-type
     (normal 'completing-read)
     (ido 'ido-completing-read)
     (helm 'emamux:helm-comp-read)))
@@ -124,9 +127,9 @@
               (car candidates)
             (emamux:completing-read "Input pane: " candidates)))))
 
-(defun* emamux:target-session (&optional (session emamux:session)
-                                         (window emamux:window)
-                                         (pane emamux:pane))
+(cl-defun emamux:target-session (&optional (session emamux:session)
+                                           (window emamux:window)
+                                           (pane emamux:pane))
   (format "%s:%s.%s" session window pane))
 
 (defun emamux:get-sessions ()
@@ -204,7 +207,7 @@
 (defun emamux:escape-dollar (input)
   (replace-regexp-in-string "\\$" "\\\\\$" input))
 
-(defun* emamux:send-keys (input &optional (target (emamux:target-session)))
+(cl-defun emamux:send-keys (input &optional (target (emamux:target-session)))
   (let ((cmd (format "send-keys -t %s \"%s\" C-m"
                      target (emamux:escape input))))
     (emamux:tmux-run-command cmd)))
@@ -283,20 +286,20 @@
 (defun emamux:list-panes ()
   (with-temp-buffer
     (emamux:tmux-run-command "list-panes" t)
-    (loop initially (goto-char (point-min))
-          while (re-search-forward "^\\(.+\\)$" nil t nil)
-          collect (match-string-no-properties 1))))
+    (cl-loop initially (goto-char (point-min))
+             while (re-search-forward "^\\(.+\\)$" nil t nil)
+             collect (match-string-no-properties 1))))
 
 (defun emamux:active-pane-id ()
-  (loop for pane in (emamux:list-panes)
-        when (string-match "\\([^ ]+\\) (active)$" pane)
-        return (match-string-no-properties 1 pane)))
+  (cl-loop for pane in (emamux:list-panes)
+           when (string-match "\\([^ ]+\\) (active)$" pane)
+           return (match-string-no-properties 1 pane)))
 
 (defun emamux:nearest-inactive-pane-id ()
-  (loop for pane in (emamux:list-panes)
-        when (not (string-match "(active)$" pane))
-        return (if (string-match " \\([^ ]+\\)$" pane)
-                   (match-string-no-properties 1 pane))))
+  (cl-loop for pane in (emamux:list-panes)
+           when (not (string-match "(active)$" pane))
+           return (if (string-match " \\([^ ]+\\)$" pane)
+                      (match-string-no-properties 1 pane))))
 
 ;;;###autoload
 (defun emamux:close-runner-pane ()
