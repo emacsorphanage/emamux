@@ -56,6 +56,13 @@
   :type  'boolean
   :group 'emamux)
 
+(defcustom emamux:completing-read-type 'normal
+  "Function type to call for completing read."
+  :type '(choice (const :tag "Using completing-read" normal)
+                 (const :tag "Using ido-completing-read" ido)
+                 (const :tag "Using helm-comp-read" helm))
+  :group 'emamux)
+
 (defvar emamux:last-command nil
   "Last emit command")
 
@@ -84,18 +91,30 @@
 (defun emamux:set-parameters-p ()
   (and emamux:session emamux:window emamux:pane))
 
+(defun emamux:helm-comp-read (prompt candidates predicate must-match)
+  (helm-comp-read prompt candidates :must-match must-match))
+
+(defun emamux:select-completing-read-function ()
+  (case emamux:completing-read-type
+    (normal 'completing-read)
+    (ido 'ido-completing-read)
+    (helm 'emamux:helm-comp-read)))
+
+(defun emamux:completing-read (prompt &rest args)
+  (apply (emamux:select-completing-read-function) prompt args))
+
 (defun emamux:set-parameter-session ()
   (let ((candidates (emamux:get-sessions)))
     (setq emamux:session
           (if (= (length candidates) 1)
               (car candidates)
-            (completing-read "Input session: " candidates nil t)))))
+            (emamux:completing-read "Input session: " candidates nil t)))))
 
 (defun emamux:set-parameter-window ()
   (let* ((candidates (emamux:get-window))
          (selected (if (= (length candidates) 1)
                        (car candidates)
-                     (completing-read "Input window: " candidates nil t))))
+                     (emamux:completing-read "Input window: " candidates nil t))))
     (setq emamux:window (car (split-string selected ":")))))
 
 (defun emamux:set-parameter-pane ()
@@ -103,7 +122,7 @@
     (setq emamux:pane
           (if (= (length candidates) 1)
               (car candidates)
-            (completing-read "Input pane: " candidates)))))
+            (emamux:completing-read "Input pane: " candidates)))))
 
 (defun* emamux:target-session (&optional (session emamux:session)
                                          (window emamux:window)
@@ -157,7 +176,7 @@
         (if (or current-prefix-arg (not (emamux:set-parameters-p)))
             (emamux:set-parameters))
         (let* ((target (emamux:target-session))
-               (prompt (format "Send to (%s): " target))
+               (prompt (format "Command [Send to (%s)]: " target))
                (input  (emamux:read-command prompt t)))
           (emamux:reset-prompt target)
           (emamux:send-keys input)))
