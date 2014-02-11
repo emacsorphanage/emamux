@@ -74,6 +74,10 @@ Clear tmux history in `runner-pane`
 
 ## Customize
 
+#### `emamux:completing-read-type`
+
+Completing read function type. You can choice from `'normal` or `'ido`, or `'helm`.
+
 #### `emamux:default-orientation`
 
 Orientation of split pane, 'vertical or 'horizonal(Default is 'vertical).
