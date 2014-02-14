@@ -113,13 +113,13 @@
     (setq emamux:session
           (if (= (length candidates) 1)
               (car candidates)
-            (emamux:completing-read "Input session: " candidates nil t)))))
+            (emamux:completing-read "Session: " candidates nil t)))))
 
 (defun emamux:set-parameter-window ()
   (let* ((candidates (emamux:get-window))
          (selected (if (= (length candidates) 1)
                        (car candidates)
-                     (emamux:completing-read "Input window: " candidates nil t))))
+                     (emamux:completing-read "Window: " candidates nil t))))
     (setq emamux:window (car (split-string selected ":")))))
 
 (defun emamux:set-parameter-pane ()
