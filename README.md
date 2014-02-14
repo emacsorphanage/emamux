@@ -27,8 +27,13 @@ Interact with tmux from Emacs.
 
 Send command to specified *target-session*(session:window.pane).
 
-*target-session* is set as default at first `emamux:send-command` called.
-You can change default *target-session* with `C-u` prefix.
+Following is `emamux:send-command` demo with ido completion.
+
+![send-command-demo](image/send-command-demo.gif)
+
+**target-session** is set as default at first `emamux:send-command` called.
+You can change default **target-session** with `C-u` prefix.
+
 
 #### `emamux:copy-kill-ring`
 
