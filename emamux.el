@@ -76,19 +76,18 @@
 (defvar emamux:pane nil)
 
 (defun emamux:tmux-running-p ()
-  (= (call-process-shell-command "tmux has-session" nil nil nil) 0))
+  (zerop (call-process-shell-command "tmux has-session" nil nil nil)))
 
 (cl-defun emamux:tmux-run-command (cmd &optional (output nil))
   (let* ((cmd (format "tmux %s" cmd))
          (retval (call-process-shell-command cmd nil output nil)))
-    (unless (= retval 0)
+    (unless (zerop retval)
       (error (format "Failed: %s(status = %d)" cmd retval)))))
 
 (defun emamux:set-parameters ()
-  (progn
-    (emamux:set-parameter-session)
-    (emamux:set-parameter-window)
-    (emamux:set-parameter-pane)))
+  (emamux:set-parameter-session)
+  (emamux:set-parameter-window)
+  (emamux:set-parameter-pane))
 
 (defun emamux:unset-parameters ()
   (setq emamux:session nil emamux:window nil emamux:pane nil))
@@ -108,26 +107,33 @@
 (defun emamux:completing-read (prompt &rest args)
   (apply (emamux:select-completing-read-function) prompt args))
 
-(defun emamux:set-parameter-session ()
+(defun emamux:read-parameter-session ()
   (let ((candidates (emamux:get-sessions)))
-    (setq emamux:session
-          (if (= (length candidates) 1)
-              (car candidates)
-            (emamux:completing-read "Session: " candidates nil t)))))
+    (if (= (length candidates) 1)
+        (car candidates)
+      (emamux:completing-read "Session: " candidates nil t))))
 
-(defun emamux:set-parameter-window ()
+(defun emamux:set-parameter-session ()
+  (setq emamux:session (emamux:read-parameter-session)))
+
+(defun emamux:read-parameter-window ()
   (let* ((candidates (emamux:get-window))
          (selected (if (= (length candidates) 1)
                        (car candidates)
                      (emamux:completing-read "Window: " candidates nil t))))
-    (setq emamux:window (car (split-string selected ":")))))
+    (car (split-string selected ":"))))
+
+(defun emamux:set-parameter-window ()
+  (setq emamux:window (emamux:read-parameter-window)))
+
+(defun emamux:read-parameter-pane ()
+  (let ((candidates (emamux:get-pane)))
+    (if (= (length candidates) 1)
+        (car candidates)
+      (emamux:completing-read "Input pane: " candidates))))
 
 (defun emamux:set-parameter-pane ()
-  (let ((candidates (emamux:get-pane)))
-    (setq emamux:pane
-          (if (= (length candidates) 1)
-              (car candidates)
-            (emamux:completing-read "Input pane: " candidates)))))
+  (setq emamux:pane (emamux:read-parameter-pane)))
 
 (cl-defun emamux:target-session (&optional (session emamux:session)
                                            (window emamux:window)
@@ -199,6 +205,14 @@
                    0))
         (data (substring-no-properties (car kill-ring))))
     (emamux:set-buffer data index)))
+
+;;;###autoload
+(defun emamux:kill-session ()
+  "Kill tmux session"
+  (interactive)
+  (emamux:check-tmux-running)
+  (let ((session (emamux:read-parameter-session)))
+    (emamux:tmux-run-command (concat "kill-session -t " session))))
 
 (defun emamux:escape (input)
   (emamux:escape-quote (emamux:escape-dollar input)))
