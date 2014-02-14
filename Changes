@@ -1,5 +1,8 @@
 Revision history for emamux.el
 
+0.05 2014-02-14
+  - Implement emamux:kill-session command
+
 0.04 2014-02-14
   - Improve prompt
 
