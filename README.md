@@ -102,6 +102,13 @@ It is useful for using `emamux` to show `session name`, `window index` and
 set-option -g status-right '[#h###S:#I:#P]'
 ```
 
+## Sample configuration
+
+```lisp
+(custom-set-variables
+ '(emamux:completing-read-type 'helm))
+```
+
 ## Emamux Applications
 
 * [emamux-perl-test](https://github.com/syohex/emamux-perl-test) a set of commands to easily run perl tests
