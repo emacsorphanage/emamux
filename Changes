@@ -1,5 +1,8 @@
 Revision history for emamux.el
 
+0.04 2014-02-14
+  - Improve prompt
+
 0.03 2014-02-11
   - Add completing read function setting
     normal, ido or helm
