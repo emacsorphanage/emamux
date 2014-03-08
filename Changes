@@ -1,5 +1,8 @@
 Revision history for emamux.el
 
+0.06 2014-03-08
+  - Enable lexical binding
+
 0.05 2014-02-14
   - Implement emamux:kill-session command
 
