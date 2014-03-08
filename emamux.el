@@ -1,4 +1,4 @@
-;;; emamux.el --- Interact with tmux
+;;; emamux.el --- Interact with tmux -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014 by Syohei YOSHIDA
 
@@ -95,7 +95,7 @@
 (defun emamux:set-parameters-p ()
   (and emamux:session emamux:window emamux:pane))
 
-(defun emamux:helm-comp-read (prompt candidates predicate must-match)
+(defun emamux:helm-comp-read (prompt candidates _predicate must-match)
   (helm-comp-read prompt candidates :must-match must-match))
 
 (defun emamux:select-completing-read-function ()
@@ -198,11 +198,9 @@
   "Set (car kill-ring) to tmux buffer"
   (interactive "P")
   (emamux:check-tmux-running)
-  (if (null kill-ring)
-      (error "kill-ring is nil!!"))
-  (let ((index (or (and (consp current-prefix-arg) (car current-prefix-arg))
-                   current-prefix-arg
-                   0))
+  (when (null kill-ring)
+    (error "kill-ring is nil!!"))
+  (let ((index (or arg 0))
         (data (substring-no-properties (car kill-ring))))
     (emamux:set-buffer data index)))
 
