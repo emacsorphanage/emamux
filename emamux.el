@@ -36,8 +36,6 @@
 
 (require 'cl-lib)
 
-(declare-function helm-comp-read "helm")
-
 (defgroup emamux nil
   "tmux manipulation from Emacs"
   :prefix "emamux:"
@@ -62,10 +60,11 @@
 (defcustom emamux:completing-read-type (if (featurep 'ido)
                                            'ido
                                          'normal)
-  "Function type to call for completing read."
+  "Function type to call for completing read.
+For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   :type '(choice (const :tag "Using completing-read" 'normal)
                  (const :tag "Using ido-completing-read" 'ido)
-                 (const :tag "Using helm-comp-read" 'helm))
+                 (const :tag "Using helm completion" 'helm))
   :group 'emamux)
 
 (defvar emamux:last-command nil
@@ -95,14 +94,10 @@
 (defun emamux:set-parameters-p ()
   (and emamux:session emamux:window emamux:pane))
 
-(defun emamux:helm-comp-read (prompt candidates _predicate must-match)
-  (helm-comp-read prompt candidates :must-match must-match))
-
 (defun emamux:select-completing-read-function ()
   (cl-case emamux:completing-read-type
-    (normal 'completing-read)
-    (ido 'ido-completing-read)
-    (helm 'emamux:helm-comp-read)))
+    ((normal helm) 'completing-read)
+    (ido 'ido-completing-read)))
 
 (defun emamux:completing-read (prompt &rest args)
   (apply (emamux:select-completing-read-function) prompt args))
