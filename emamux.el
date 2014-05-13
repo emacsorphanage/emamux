@@ -149,6 +149,15 @@
         (push (match-string-no-properties 1) sessions))
       sessions)))
 
+(defun emamux:get-buffers ()
+  (with-temp-buffer
+    (emamux:tmux-run-command "list-buffers" t)
+    (goto-char (point-min))
+    (cl-loop while
+          (re-search-forward
+           "^\\([0-9]+\\): +\\([0-9]+\\) +\\(bytes\\): +[\"]\\(.*\\)[\"]" nil t)
+          collect (match-string-no-properties 4))))
+
 (defun emamux:get-window ()
   (with-temp-buffer
     (emamux:tmux-run-command (format "list-windows -t %s" emamux:session) t)
@@ -203,6 +212,13 @@
   (let ((index (or arg 0))
         (data (substring-no-properties (car kill-ring))))
     (emamux:set-buffer data index)))
+
+;;;###autoload
+(defun emamux:yank-from-list-buffers ()
+  "Yank text copied from tmux."
+  (interactive)
+  (let ((candidates (emamux:get-buffers)))
+    (insert (emamux:completing-read "Buffers: " candidates))))
 
 ;;;###autoload
 (defun emamux:kill-session ()
