@@ -34,6 +34,10 @@ Following is `emamux:send-command` demo with ido completion.
 **target-session** is set as default at first `emamux:send-command` called.
 You can change default **target-session** with `C-u` prefix.
 
+#### `emamux:yank-from-list-buffers`
+
+Yank from `tmux` buffer.
+
 
 #### `emamux:copy-kill-ring`
 
@@ -82,6 +86,7 @@ Clear tmux history in `runner-pane`
 #### `emamux:completing-read-type`
 
 Completing read function type. You can choice from `'normal` or `'ido`, or `'helm`.
+You must enable `helm-mode` if you set `'helm`.
 
 #### `emamux:default-orientation`
 
