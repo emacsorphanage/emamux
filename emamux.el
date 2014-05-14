@@ -148,10 +148,17 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (with-temp-buffer
     (emamux:tmux-run-command "list-buffers" t)
     (goto-char (point-min))
-    (cl-loop while
+    (cl-loop for count from 0 while
           (re-search-forward
            "^\\([0-9]+\\): +\\([0-9]+\\) +\\(bytes\\): +[\"]\\(.*\\)[\"]" nil t)
-          collect (match-string-no-properties 4))))
+          collect (cons (replace-regexp-in-string
+                         "\\s\\" "" (match-string-no-properties 4))
+                        count))))
+
+(defun emamux:show-buffer (index)
+  (with-temp-buffer
+    (emamux:tmux-run-command (format "show-buffer -b %s" index) t)
+    (buffer-substring-no-properties (point-min) (point-max))))
 
 (defun emamux:get-window ()
   (with-temp-buffer
@@ -210,10 +217,13 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 ;;;###autoload
 (defun emamux:yank-from-list-buffers ()
-  "Yank text copied from tmux."
   (interactive)
-  (let ((candidates (emamux:get-buffers)))
-    (insert (emamux:completing-read "Buffers: " candidates))))
+  (let* ((candidates (emamux:get-buffers))
+         (index (assoc-default
+                 (emamux:completing-read
+                  "Buffers: " (mapcar 'car candidates))
+                 candidates)))
+    (insert (emamux:show-buffer index))))
 
 ;;;###autoload
 (defun emamux:kill-session ()
