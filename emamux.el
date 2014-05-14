@@ -225,7 +225,8 @@
   (interactive)
   (let* ((candidates (emamux:get-buffers))
          (index (assoc-default
-                 (emamux:completing-read "Buffers: " candidates)
+                 (emamux:completing-read
+                  "Buffers: " (mapcar 'car candidates))
                  candidates)))
     (insert (emamux:show-buffer index))))
 
