@@ -149,6 +149,22 @@
         (push (match-string-no-properties 1) sessions))
       sessions)))
 
+(defun emamux:get-buffers ()
+  (with-temp-buffer
+    (emamux:tmux-run-command "list-buffers" t)
+    (goto-char (point-min))
+    (cl-loop for count from 0 while
+          (re-search-forward
+           "^\\([0-9]+\\): +\\([0-9]+\\) +\\(bytes\\): +[\"]\\(.*\\)[\"]" nil t)
+          collect (cons (replace-regexp-in-string
+                         "\\s\\" "" (match-string-no-properties 4))
+                        count))))
+
+(defun emamux:show-buffer (index)
+  (with-temp-buffer
+    (emamux:tmux-run-command (format "show-buffer -b %s" index) t)
+    (buffer-substring-no-properties (point-min) (point-max))))
+
 (defun emamux:get-window ()
   (with-temp-buffer
     (emamux:tmux-run-command (format "list-windows -t %s" emamux:session) t)
@@ -203,6 +219,16 @@
   (let ((index (or arg 0))
         (data (substring-no-properties (car kill-ring))))
     (emamux:set-buffer data index)))
+
+;;;###autoload
+(defun emamux:yank-from-list-buffers ()
+  (interactive)
+  (let* ((candidates (emamux:get-buffers))
+         (index (assoc-default
+                 (emamux:completing-read
+                  "Buffers: " (mapcar 'car candidates))
+                 candidates)))
+    (insert (emamux:show-buffer index))))
 
 ;;;###autoload
 (defun emamux:kill-session ()
