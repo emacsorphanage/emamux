@@ -34,6 +34,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (defvar helm-mode))
+
 (require 'cl-lib)
 
 (defgroup emamux nil
@@ -57,9 +60,14 @@
   :type  'boolean
   :group 'emamux)
 
+(defsubst emamux:helm-mode-enabled-p ()
+  (and (featurep 'helm) helm-mode))
+
 (defcustom emamux:completing-read-type (if ido-mode
                                            'ido
-                                         'normal)
+                                         (if (emamux:helm-mode-enabled-p)
+                                             'helm
+                                           'normal))
   "Function type to call for completing read.
 For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   :type '(choice (const :tag "Using completing-read" 'normal)
@@ -99,8 +107,19 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
     ((normal helm) 'completing-read)
     (ido 'ido-completing-read)))
 
+(defun emamux:mode-function ()
+  (let ((do-nothing (lambda (_x))))
+    (cl-case emamux:completing-read-type
+      ((normal ido) do-nothing)
+      (helm (or (and (emamux:helm-mode-enabled-p) do-nothing) 'helm-mode)))))
+
 (defun emamux:completing-read (prompt &rest args)
-  (apply (emamux:select-completing-read-function) prompt args))
+  (let ((mode-function (emamux:mode-function)))
+    (unwind-protect
+        (progn
+          (funcall mode-function +1)
+          (apply (emamux:select-completing-read-function) prompt args))
+      (funcall mode-function -1))))
 
 (defun emamux:read-parameter-session ()
   (let ((candidates (emamux:get-sessions)))
