@@ -1,5 +1,8 @@
 Revision history for emamux.el
 
+0.08 2014-05-16
+  - Improve for helm user
+
 0.07 2014-05-14
   - Add 'emamux:yank-from-list-buffers' command
     Thanks thierryvolpiatto
