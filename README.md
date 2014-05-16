@@ -86,7 +86,6 @@ Clear tmux history in `runner-pane`
 #### `emamux:completing-read-type`
 
 Completing read function type. You can choice from `'normal` or `'ido`, or `'helm`.
-You must enable `helm-mode` if you set `'helm`.
 
 #### `emamux:default-orientation`
 
