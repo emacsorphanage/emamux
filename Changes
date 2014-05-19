@@ -1,5 +1,9 @@
 Revision history for emamux.el
 
+0.09 2014-05-19
+  - Refactoring for helm
+    Thanks thierryvolpiatto
+
 0.08 2014-05-16
   - Improve for helm user
 
