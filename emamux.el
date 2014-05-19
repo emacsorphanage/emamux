@@ -108,10 +108,9 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
     (ido 'ido-completing-read)))
 
 (defun emamux:mode-function ()
-  (let ((do-nothing (lambda (_x))))
-    (cl-case emamux:completing-read-type
-      ((normal ido) do-nothing)
-      (helm (or (and (emamux:helm-mode-enabled-p) do-nothing) 'helm-mode)))))
+  (cl-case emamux:completing-read-type
+    ((normal ido) 'ignore)
+    (helm (if (emamux:helm-mode-enabled-p) 'ignore 'helm-mode))))
 
 (defun emamux:completing-read (prompt &rest args)
   (let ((mode-function (emamux:mode-function)))
