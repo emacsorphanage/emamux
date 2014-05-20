@@ -83,7 +83,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defvar emamux:pane nil)
 
 (defun emamux:tmux-running-p ()
-  (zerop (call-process-shell-command "tmux has-session" nil nil nil)))
+  (zerop (call-process-shell-command "tmux has-session")))
 
 (cl-defun emamux:tmux-run-command (cmd &optional (output nil))
   (let* ((cmd (format "tmux %s" cmd))
@@ -381,7 +381,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 (defun emamux:pane-alive-p (target)
   (let ((cmd (format "tmux list-panes -t %s" target)))
-    (= (call-process-shell-command cmd nil nil nil) 0)))
+    (zerop (call-process-shell-command cmd))))
 
 (defun emamux:runner-alive-p ()
   (and emamux:runner-pane-id (emamux:pane-alive-p emamux:runner-pane-id)))
