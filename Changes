@@ -1,5 +1,9 @@
 Revision history for emamux.el
 
+0.10 2014-05-20
+  - Add alive check to yank command by thierryvolpiatto
+  - Some re-factoring
+
 0.09 2014-05-19
   - Refactoring for helm
     Thanks thierryvolpiatto
