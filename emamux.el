@@ -236,6 +236,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 ;;;###autoload
 (defun emamux:yank-from-list-buffers ()
   (interactive)
+  (emamux:check-tmux-running)
   (let* ((candidates (emamux:get-buffers))
          (index (assoc-default
                  (emamux:completing-read
