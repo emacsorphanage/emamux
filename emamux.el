@@ -82,14 +82,15 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defvar emamux:window nil)
 (defvar emamux:pane nil)
 
-(defun emamux:tmux-running-p ()
-  (zerop (call-process-shell-command "tmux has-session")))
+(defsubst emamux:tmux-running-p ()
+  (zerop (call-process "tmux" nil nil nil "has-session")))
 
-(cl-defun emamux:tmux-run-command (cmd &optional (output nil))
-  (let* ((cmd (format "tmux %s" cmd))
-         (retval (call-process-shell-command cmd nil output nil)))
+(defun emamux:tmux-run-command (output &rest args)
+  (let ((retval (apply 'call-process "tmux" nil output nil args)))
     (unless (zerop retval)
-      (error (format "Failed: %s(status = %d)" cmd retval)))))
+      (error (format "Failed: %s(status = %d)"
+                     (mapconcat 'identity (cons "tmux" args) " ")
+                     retval)))))
 
 (defun emamux:set-parameters ()
   (emamux:set-parameter-session)
@@ -155,7 +156,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 (defun emamux:get-sessions ()
   (with-temp-buffer
-    (emamux:tmux-run-command "list-sessions" t)
+    (emamux:tmux-run-command t "list-sessions")
     (goto-char (point-min))
     (let (sessions)
       (while (re-search-forward "^\\([^:]+\\):" nil t)
@@ -164,7 +165,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 (defun emamux:get-buffers ()
   (with-temp-buffer
-    (emamux:tmux-run-command "list-buffers" t)
+    (emamux:tmux-run-command t "list-buffers")
     (goto-char (point-min))
     (cl-loop for count from 0 while
           (re-search-forward
@@ -175,12 +176,12 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 (defun emamux:show-buffer (index)
   (with-temp-buffer
-    (emamux:tmux-run-command (format "show-buffer -b %s" index) t)
+    (emamux:tmux-run-command t "show-buffer" "-b" (number-to-string index))
     (buffer-substring-no-properties (point-min) (point-max))))
 
 (defun emamux:get-window ()
   (with-temp-buffer
-    (emamux:tmux-run-command (format "list-windows -t %s" emamux:session) t)
+    (emamux:tmux-run-command t "list-windows" "-t" emamux:session)
     (goto-char (point-min))
     (let (windows)
       (while (re-search-forward "^\\([0-9]+: [^ ]+\\)" nil t)
@@ -189,8 +190,8 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 (defun emamux:get-pane ()
   (with-temp-buffer
-    (emamux:tmux-run-command (format "list-panes -t %s:%s"
-                                     emamux:session emamux:window) t)
+    (let ((pane-id (concat emamux:session ":" emamux:window)))
+      (emamux:tmux-run-command t "list-panes" "-t" pane-id))
     (goto-char (point-min))
     (let (panes)
       (while (re-search-forward "^\\([0-9]+\\):" nil t)
@@ -250,35 +251,23 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (interactive)
   (emamux:check-tmux-running)
   (let ((session (emamux:read-parameter-session)))
-    (emamux:tmux-run-command (concat "kill-session -t " session))))
+    (emamux:tmux-run-command nil "kill-session" "-t" session)))
 
-(defun emamux:escape (input)
-  (emamux:escape-quote (emamux:escape-dollar input)))
-
-(defun emamux:escape-quote (input)
-  (replace-regexp-in-string "\\\"" "\\\\\"" input))
-
-(defun emamux:escape-dollar (input)
-  (replace-regexp-in-string "\\$" "\\\\\$" input))
+(defsubst emamux:escape-semicolon (str)
+  (replace-regexp-in-string ";\\'" "\\\\;" str))
 
 (cl-defun emamux:send-keys (input &optional (target (emamux:target-session)))
-  (let ((cmd (format "send-keys -t %s \"%s\" C-m"
-                     target (emamux:escape input))))
-    (emamux:tmux-run-command cmd)))
+  (let ((escaped (emamux:escape-semicolon input)))
+    (emamux:tmux-run-command nil "send-keys" "-t" target escaped "C-m")))
 
-(defun emamux:send-raw-keys (input target)
-  (let ((cmd (format "send-keys -t %s %s" target input)))
-    (emamux:tmux-run-command cmd)))
-
-(defun emamux:buffer-index-option (index)
+(defun emamux:set-buffer-argument (index data)
   (if (zerop index)
-      ""
-    (format "-b %d" index)))
+      (list data)
+    (list "-b" (number-to-string index) data)))
 
 (defun emamux:set-buffer (data index)
-  (let ((cmd (format "set-buffer %s \"%s\""
-                     (emamux:buffer-index-option index) (emamux:escape data))))
-    (emamux:tmux-run-command cmd)))
+  (let ((args (emamux:set-buffer-argument index data)))
+    (apply 'emamux:tmux-run-command nil "set-buffer" args)))
 
 (defun emamux:in-tmux-p ()
   (and (not (display-graphic-p))
@@ -309,7 +298,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (emamux:run-command emamux:last-command))
 
 (defun emamux:reset-prompt (pane)
-  (emamux:send-raw-keys "q C-u" pane))
+  (emamux:tmux-run-command nil "send-keys" "-t" pane "q" "C-u"))
 
 (defun emamux:chdir-pane (dir)
   (let ((chdir-cmd (format " cd %s" (or dir default-directory))))
@@ -325,8 +314,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (setq emamux:runner-pane-id (emamux:active-pane-id)))
 
 (defun emamux:select-pane (target)
-  (let ((cmd (format "select-pane -t %s" target) ))
-    (emamux:tmux-run-command cmd)))
+  (emamux:tmux-run-command nil "select-pane" "-t" target))
 
 (defvar emamux:orientation-option-alist
   '((vertical . "-v") (horizonal . "-h")))
@@ -334,12 +322,14 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defun emamux:split-runner-pane ()
   (let ((orient-option (assoc-default emamux:default-orientation
                                       emamux:orientation-option-alist)))
-    (emamux:tmux-run-command (format "split-window -p %d %s"
-                                     emamux:runner-pane-height orient-option))))
+    (emamux:tmux-run-command nil
+                             "split-window" "-p"
+                             (number-to-string emamux:runner-pane-height)
+                             orient-option)))
 
 (defun emamux:list-panes ()
   (with-temp-buffer
-    (emamux:tmux-run-command "list-panes" t)
+    (emamux:tmux-run-command t "list-panes")
     (cl-loop initially (goto-char (point-min))
              while (re-search-forward "^\\(.+\\)$" nil t nil)
              collect (match-string-no-properties 1))))
@@ -368,16 +358,14 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   "Close all panes except current pane"
   (interactive)
   (let ((panes (emamux:list-panes)))
-    (if (> (length panes) 1)
-        (emamux:kill-all-panes))))
+    (when (> (length panes) 1)
+      (emamux:kill-all-panes))))
 
 (defun emamux:kill-all-panes ()
-  (let ((cmd "kill-pane -a"))
-    (emamux:tmux-run-command cmd)))
+  (emamux:tmux-run-command nil "kill-pane" "-a"))
 
 (defun emamux:kill-pane (target)
-  (let ((cmd (format "kill-pane -t %s" target)))
-    (emamux:tmux-run-command cmd)))
+  (emamux:tmux-run-command nil "kill-pane" "-t" target))
 
 (defun emamux:pane-alive-p (target)
   (let ((cmd (format "tmux list-panes -t %s" target)))
@@ -396,28 +384,28 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (interactive)
   (emamux:check-runner-alive)
   (emamux:select-pane emamux:runner-pane-id)
-  (emamux:tmux-run-command "copy-mode"))
+  (emamux:tmux-run-command nil "copy-mode"))
 
 ;;;###autoload
 (defun emamux:interrupt-runner ()
   "Send SIGINT to runner pane"
   (interactive)
   (emamux:check-runner-alive)
-  (emamux:send-raw-keys "^c" emamux:runner-pane-id))
+  (emamux:tmux-run-command nil "send-keys" "-t" emamux:runner-pane-id "^c"))
 
 ;;;###autoload
 (defun emamux:clear-runner-history ()
   "Clear history of runner pane"
   (interactive)
   (emamux:check-runner-alive)
-  (emamux:tmux-run-command (format "clear-history %s" emamux:runner-pane-id)))
+  (emamux:tmux-run-command nil "clear-history" emamux:runner-pane-id))
 
 ;;;###autoload
 (defun emamux:zoom-runner ()
   "Zoom runner pane. This feature requires tmux 1.8 or higher"
   (interactive)
   (emamux:check-runner-alive)
-  (emamux:tmux-run-command (format " resize-pane -Z -t %s" emamux:runner-pane-id)))
+  (emamux:tmux-run-command nil "resize-pane" "-Z" "-t" emamux:runner-pane-id))
 
 (provide 'emamux)
 
