@@ -1,5 +1,8 @@
 Revision history for emamux.el
 
+0.11 2014-06-18
+  - Fix semicolon escaping issue(Reported by milkypostman)
+
 0.10 2014-05-20
   - Add alive check to yank command by thierryvolpiatto
   - Some re-factoring
