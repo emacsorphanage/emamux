@@ -1,5 +1,8 @@
 Revision history for emamux.el
 
+0.12 2014-07-01
+  - Refactoring
+
 0.11 2014-06-18
   - Fix semicolon escaping issue(Reported by milkypostman)
 
