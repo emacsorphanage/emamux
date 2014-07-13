@@ -1,9 +1,7 @@
 (source gnu)
 (source melpa)
 
-(package "emamux" "0.12" "Interact with tmux")
-
-(depends-on "cl-lib")
+(package-file "emamux.el")
 
 (development
  (depends-on "helm"))
