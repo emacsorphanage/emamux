@@ -283,7 +283,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (emamux:check-tmux-running)
   (unless (emamux:in-tmux-p)
     (error "You are not in 'tmux'"))
-  (let ((current-pane (emamux:active-pane-id (emamux:list-panes))))
+  (let ((current-pane (emamux:current-active-pane-id)))
     (unless (emamux:runner-alive-p)
       (emamux:setup-runner-pane)
       (emamux:chdir-pane cmddir))
@@ -305,14 +305,13 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
     (emamux:send-keys chdir-cmd emamux:runner-pane-id)))
 
 (defun emamux:setup-runner-pane ()
-  (let* ((panes (emamux:list-panes))
-         (nearest-pane-id (emamux:nearest-inactive-pane-id panes)))
+  (let ((nearest-pane-id (emamux:nearest-inactive-pane-id (emamux:list-panes))))
     (if (and emamux:use-nearest-pane nearest-pane-id)
         (progn
           (emamux:select-pane nearest-pane-id)
           (emamux:reset-prompt nearest-pane-id))
       (emamux:split-runner-pane))
-    (setq emamux:runner-pane-id (emamux:active-pane-id panes))))
+    (setq emamux:runner-pane-id (emamux:current-active-pane-id))))
 
 (defun emamux:select-pane (target)
   (emamux:tmux-run-command nil "select-pane" "-t" target))
@@ -339,6 +338,9 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (cl-loop for pane in panes
            when (string-match "\\([^ ]+\\) (active)\\'" pane)
            return (match-string-no-properties 1 pane)))
+
+(defun emamux:current-active-pane-id ()
+  (emamux:active-pane-id (emamux:list-panes)))
 
 (defun emamux:nearest-inactive-pane-id (panes)
   (cl-loop for pane in panes
