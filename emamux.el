@@ -283,7 +283,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (emamux:check-tmux-running)
   (unless (emamux:in-tmux-p)
     (error "You are not in 'tmux'"))
-  (let ((current-pane (emamux:active-pane-id)))
+  (let ((current-pane (emamux:active-pane-id (emamux:list-panes))))
     (unless (emamux:runner-alive-p)
       (emamux:setup-runner-pane)
       (emamux:chdir-pane cmddir))
@@ -305,13 +305,14 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
     (emamux:send-keys chdir-cmd emamux:runner-pane-id)))
 
 (defun emamux:setup-runner-pane ()
-  (let ((nearest-pane-id (emamux:nearest-inactive-pane-id)))
+  (let* ((panes (emamux:list-panes))
+         (nearest-pane-id (emamux:nearest-inactive-pane-id panes)))
     (if (and emamux:use-nearest-pane nearest-pane-id)
-      (progn
-        (emamux:select-pane nearest-pane-id)
-        (emamux:reset-prompt nearest-pane-id))
-      (emamux:split-runner-pane)))
-  (setq emamux:runner-pane-id (emamux:active-pane-id)))
+        (progn
+          (emamux:select-pane nearest-pane-id)
+          (emamux:reset-prompt nearest-pane-id))
+      (emamux:split-runner-pane))
+    (setq emamux:runner-pane-id (emamux:active-pane-id panes))))
 
 (defun emamux:select-pane (target)
   (emamux:tmux-run-command nil "select-pane" "-t" target))
@@ -334,16 +335,16 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
              while (re-search-forward "^\\(.+\\)$" nil t nil)
              collect (match-string-no-properties 1))))
 
-(defun emamux:active-pane-id ()
-  (cl-loop for pane in (emamux:list-panes)
-           when (string-match "\\([^ ]+\\) (active)$" pane)
+(defun emamux:active-pane-id (panes)
+  (cl-loop for pane in panes
+           when (string-match "\\([^ ]+\\) (active)\\'" pane)
            return (match-string-no-properties 1 pane)))
 
-(defun emamux:nearest-inactive-pane-id ()
-  (cl-loop for pane in (emamux:list-panes)
-           when (not (string-match "(active)$" pane))
-           return (if (string-match " \\([^ ]+\\)$" pane)
-                      (match-string-no-properties 1 pane))))
+(defun emamux:nearest-inactive-pane-id (panes)
+  (cl-loop for pane in panes
+           when (and (not (string-match-p "(active)\\'" pane))
+                     (string-match " \\([^ ]+\\)\\'" pane))
+           return (match-string-no-properties 1 pane)))
 
 ;;;###autoload
 (defun emamux:close-runner-pane ()
@@ -357,9 +358,8 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defun emamux:close-panes ()
   "Close all panes except current pane"
   (interactive)
-  (let ((panes (emamux:list-panes)))
-    (when (> (length panes) 1)
-      (emamux:kill-all-panes))))
+  (when (> (length (emamux:list-panes)) 1)
+    (emamux:kill-all-panes)))
 
 (defun emamux:kill-all-panes ()
   (emamux:tmux-run-command nil "kill-pane" "-a"))
