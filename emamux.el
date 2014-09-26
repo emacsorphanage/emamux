@@ -83,10 +83,10 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defvar emamux:pane nil)
 
 (defsubst emamux:tmux-running-p ()
-  (zerop (call-process "tmux" nil nil nil "has-session")))
+  (zerop (process-file "tmux" nil nil nil "has-session")))
 
 (defun emamux:tmux-run-command (output &rest args)
-  (let ((retval (apply 'call-process "tmux" nil output nil args)))
+  (let ((retval (apply 'process-file "tmux" nil output nil args)))
     (unless (zerop retval)
       (error (format "Failed: %s(status = %d)"
                      (mapconcat 'identity (cons "tmux" args) " ")
@@ -316,7 +316,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defun emamux:select-pane (target)
   (emamux:tmux-run-command nil "select-pane" "-t" target))
 
-(defvar emamux:orientation-option-alist
+(defconst emamux:orientation-option-alist
   '((vertical . "-v") (horizonal . "-h")))
 
 (defun emamux:split-runner-pane ()
@@ -331,7 +331,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (with-temp-buffer
     (emamux:tmux-run-command t "list-panes")
     (cl-loop initially (goto-char (point-min))
-             while (re-search-forward "^\\(.+\\)$" nil t nil)
+             while (re-search-forward "^\\(.+\\)$" nil t)
              collect (match-string-no-properties 1))))
 
 (defun emamux:active-pane-id (panes)
@@ -369,8 +369,8 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defun emamux:kill-pane (target)
   (emamux:tmux-run-command nil "kill-pane" "-t" target))
 
-(defun emamux:pane-alive-p (target)
-  (zerop (call-process "tmux" nil nil nil "list-panes" "-t" target)))
+(defsubst emamux:pane-alive-p (target)
+  (zerop (process-file "tmux" nil nil nil "list-panes" "-t" target)))
 
 (defun emamux:runner-alive-p ()
   (and emamux:runner-pane-id (emamux:pane-alive-p emamux:runner-pane-id)))
