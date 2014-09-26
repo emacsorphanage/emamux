@@ -331,7 +331,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (with-temp-buffer
     (emamux:tmux-run-command t "list-panes")
     (cl-loop initially (goto-char (point-min))
-             while (re-search-forward "^\\(.+\\)$" nil t nil)
+             while (re-search-forward "^\\(.+\\)$" nil t)
              collect (match-string-no-properties 1))))
 
 (defun emamux:active-pane-id (panes)
