@@ -316,7 +316,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defun emamux:select-pane (target)
   (emamux:tmux-run-command nil "select-pane" "-t" target))
 
-(defvar emamux:orientation-option-alist
+(defconst emamux:orientation-option-alist
   '((vertical . "-v") (horizonal . "-h")))
 
 (defun emamux:split-runner-pane ()
