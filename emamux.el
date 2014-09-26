@@ -369,7 +369,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defun emamux:kill-pane (target)
   (emamux:tmux-run-command nil "kill-pane" "-t" target))
 
-(defun emamux:pane-alive-p (target)
+(defsubst emamux:pane-alive-p (target)
   (zerop (process-file "tmux" nil nil nil "list-panes" "-t" target)))
 
 (defun emamux:runner-alive-p ()
