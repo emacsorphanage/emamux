@@ -17,7 +17,7 @@ Interact with tmux from Emacs.
 
 ## Requirements
 
-* Emacs 23 or higher.
+* Emacs 24 or higher.
 * tmux 1.5
 
 
