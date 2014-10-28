@@ -1,4 +1,4 @@
-# emamux.el
+# emamux.el [![melpa badge][melpa-badge]][melpa-link] [![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
 
 Interact with tmux from Emacs.
 
@@ -127,3 +127,8 @@ set-option -g status-right '[#h###S:#I:#P]'
 ## See Also
 * [vimux](https://github.com/benmills/vimux/)
 * [tslime.vim](https://github.com/kikijump/tslime.vim)
+
+[melpa-link]: http://melpa.org/#/emamux
+[melpa-stable-link]: http://stable.melpa.org/#/emamux
+[melpa-badge]: http://melpa.org/packages/emamux-badge.svg
+[melpa-stable-badge]: http://stable.melpa.org/packages/emamux-badge.svg
