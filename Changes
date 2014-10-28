@@ -1,5 +1,8 @@
 Revision history for emamux.el
 
+0.13 2014-10-28
+  - Drop Emacs 23 support
+
 0.12 2014-07-01
   - Refactoring
 
