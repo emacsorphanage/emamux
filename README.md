@@ -98,7 +98,7 @@ Height of `runner-pane`(Default is 20).
 
 #### `emamux:use-nearest-pane`
 
-Use nearest pane as `runner pane` instead of spliting pane(Default is nil).
+Use nearest pane as `runner pane` instead of splitting pane(Default is nil).
 
 
 ## tmux configuration
