@@ -128,7 +128,7 @@ set-option -g status-right '[#h###S:#I:#P]'
 * [vimux](https://github.com/benmills/vimux/)
 * [tslime.vim](https://github.com/kikijump/tslime.vim)
 
-[melpa-link]: http://melpa.org/#/emamux
-[melpa-stable-link]: http://stable.melpa.org/#/emamux
-[melpa-badge]: http://melpa.org/packages/emamux-badge.svg
-[melpa-stable-badge]: http://stable.melpa.org/packages/emamux-badge.svg
+[melpa-link]: https://melpa.org/#/emamux
+[melpa-stable-link]: https://stable.melpa.org/#/emamux
+[melpa-badge]: https://melpa.org/packages/emamux-badge.svg
+[melpa-stable-badge]: https://stable.melpa.org/packages/emamux-badge.svg
