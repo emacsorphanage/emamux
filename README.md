@@ -15,6 +15,15 @@ Interact with tmux from Emacs.
 [vimux](https://github.com/benmills/vimux/).
 
 
+## Installation
+
+`emamux` is available on [MELPA](https://melpa.org/) and [MELPA stable](https://stable.melpa.org/)
+
+You can install `emamux` with the following command.
+
+<kbd>M-x package-install [RET] emamux [RET]</kbd>
+
+
 ## Requirements
 
 * Emacs 24 or higher.
