@@ -222,6 +222,22 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
           (emamux:reset-prompt target)
           (emamux:send-keys input)))
       (quit (emamux:unset-parameters))))
+      
+;;;###autoload
+(defun emamux:send-current-line-or-region (beg end)
+  "Send current line or selected region to target-session of tmux"
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (region-end))
+                 (list (point-at-bol) (point-at-eol) )))
+  (emamux:check-tmux-running)
+  (condition-case nil
+      (progn
+        (if (or current-prefix-arg (not (emamux:set-parameters-p)))
+            (emamux:set-parameters))
+        (let* ((target (emamux:target-session))
+               (input (buffer-substring-no-properties beg end)))
+          (emamux:send-keys input)))
+      (quit (emamux:unset-parameters))))
 
 ;;;###autoload
 (defun emamux:copy-kill-ring (arg)
