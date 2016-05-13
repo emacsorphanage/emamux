@@ -368,7 +368,6 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defun emamux:close-runner-pane ()
   "Close runner pane"
   (interactive)
-  (emamux:runner-alive-p)
   (emamux:kill-pane emamux:runner-pane-id)
   (setq emamux:runner-pane-id nil))
 
