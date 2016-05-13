@@ -289,7 +289,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (and (not (display-graphic-p))
        (getenv "TMUX")))
 
-(defvar emamux:runner-pane-id nil)
+(defvar emamux:runner-pane-id-map nil)
 
 ;;;###autoload
 (defun emamux:run-command (cmd &optional cmddir)
@@ -303,7 +303,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
     (unless (emamux:runner-alive-p)
       (emamux:setup-runner-pane)
       (emamux:chdir-pane cmddir))
-    (emamux:send-keys cmd emamux:runner-pane-id)
+    (emamux:send-keys cmd (emamux:get-runner-pane-id))
     (emamux:select-pane current-pane)))
 
 ;;;###autoload
@@ -318,7 +318,10 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 (defun emamux:chdir-pane (dir)
   (let ((chdir-cmd (format " cd %s" (or dir default-directory))))
-    (emamux:send-keys chdir-cmd emamux:runner-pane-id)))
+    (emamux:send-keys chdir-cmd (emamux:get-runner-pane-id))))
+
+(defun emamux:get-runner-pane-id ()
+  (cdr (assoc (emamux:current-active-window-id) emamux:runner-pane-id-map)))
 
 (defun emamux:setup-runner-pane ()
   (let ((nearest-pane-id (emamux:nearest-inactive-pane-id (emamux:list-panes))))
@@ -327,7 +330,10 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
           (emamux:select-pane nearest-pane-id)
           (emamux:reset-prompt nearest-pane-id))
       (emamux:split-runner-pane))
-    (setq emamux:runner-pane-id (emamux:current-active-pane-id))))
+    (setq emamux:runner-pane-id-map
+          (cons (cons (emamux:current-active-window-id)
+                      (emamux:current-active-pane-id))
+                emamux:runner-pane-id-map))))
 
 (defun emamux:select-pane (target)
   (emamux:tmux-run-command nil "select-pane" "-t" target))
@@ -368,8 +374,9 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defun emamux:close-runner-pane ()
   "Close runner pane"
   (interactive)
-  (emamux:kill-pane emamux:runner-pane-id)
-  (setq emamux:runner-pane-id nil))
+  (let ((window-id (emamux:current-active-window-id)))
+    (emamux:kill-pane window-id)
+    (delete (assoc window-id emamux:runner-pane-id-map) emamux:runner-pane-id-map)))
 
 ;;;###autoload
 (defun emamux:close-panes ()
@@ -388,7 +395,12 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (zerop (process-file "tmux" nil nil nil "list-panes" "-t" target)))
 
 (defun emamux:runner-alive-p ()
-  (and emamux:runner-pane-id (emamux:pane-alive-p emamux:runner-pane-id)))
+  (let ((pane-id
+         (cdr
+          (assoc
+           (emamux:current-active-window-id)
+           emamux:runner-pane-id-map))))
+    (and pane-id (emamux:pane-alive-p pane-id))))
 
 (defun emamux:check-runner-alive ()
   (unless (emamux:runner-alive-p)
@@ -399,7 +411,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   "Enter copy-mode in runner pane"
   (interactive)
   (emamux:check-runner-alive)
-  (emamux:select-pane emamux:runner-pane-id)
+  (emamux:select-pane (emamux:get-runner-pane-id))
   (emamux:tmux-run-command nil "copy-mode"))
 
 ;;;###autoload
@@ -407,21 +419,21 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   "Send SIGINT to runner pane"
   (interactive)
   (emamux:check-runner-alive)
-  (emamux:tmux-run-command nil "send-keys" "-t" emamux:runner-pane-id "^c"))
+  (emamux:tmux-run-command nil "send-keys" "-t" (emamux:get-runner-pane-id) "^c"))
 
 ;;;###autoload
 (defun emamux:clear-runner-history ()
   "Clear history of runner pane"
   (interactive)
   (emamux:check-runner-alive)
-  (emamux:tmux-run-command nil "clear-history" emamux:runner-pane-id))
+  (emamux:tmux-run-command nil "clear-history" (emamux:get-runner-pane-id)))
 
 ;;;###autoload
 (defun emamux:zoom-runner ()
   "Zoom runner pane. This feature requires tmux 1.8 or higher"
   (interactive)
   (emamux:check-runner-alive)
-  (emamux:tmux-run-command nil "resize-pane" "-Z" "-t" emamux:runner-pane-id))
+  (emamux:tmux-run-command nil "resize-pane" "-Z" "-t" (emamux:get-runner-pane-id)))
 
 ;;;###autoload
 (defun emamux:new-window ()
