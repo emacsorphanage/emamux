@@ -291,6 +291,14 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 (defvar emamux:runner-pane-id-map nil)
 
+(defun emamux:gc-runner-pane-map ()
+  (let ((alive-window-ids (emamux:window-ids))
+        ret)
+    (dolist (entry emamux:runner-pane-id-map)
+      (if (and (member (car entry) alive-window-ids))
+          (setq ret (cons entry ret))))
+    (setq emamux:runner-pane-id-map ret)))
+
 ;;;###autoload
 (defun emamux:run-command (cmd &optional cmddir)
   "Run command"
@@ -299,6 +307,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (emamux:check-tmux-running)
   (unless (emamux:in-tmux-p)
     (error "You are not in 'tmux'"))
+  (emamux:gc-runner-pane-map)
   (let ((current-pane (emamux:current-active-pane-id)))
     (unless (emamux:runner-alive-p)
       (emamux:setup-runner-pane)
@@ -323,6 +332,13 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 (defun emamux:get-runner-pane-id ()
   (cdr (assoc (emamux:current-active-window-id) emamux:runner-pane-id-map)))
 
+(defun emamux:add-to-assoc (key value alist-variable)
+  (let* ((alist (symbol-value alist-variable))
+         (entry (assoc key alist)))
+    (if entry (setcdr entry value)
+      (set alist-variable
+           (cons (cons key value) alist)))))
+
 (defun emamux:setup-runner-pane ()
   (let ((nearest-pane-id (emamux:nearest-inactive-pane-id (emamux:list-panes))))
     (if (and emamux:use-nearest-pane nearest-pane-id)
@@ -330,10 +346,10 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
           (emamux:select-pane nearest-pane-id)
           (emamux:reset-prompt nearest-pane-id))
       (emamux:split-runner-pane))
-    (setq emamux:runner-pane-id-map
-          (cons (cons (emamux:current-active-window-id)
-                      (emamux:current-active-pane-id))
-                emamux:runner-pane-id-map))))
+    (emamux:add-to-assoc
+     (emamux:current-active-window-id)
+     (emamux:current-active-pane-id)
+     'emamux:runner-pane-id-map)))
 
 (defun emamux:select-pane (target)
   (emamux:tmux-run-command nil "select-pane" "-t" target))
@@ -450,6 +466,11 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
     (cl-loop initially (goto-char (point-min))
              while (re-search-forward "^\\(.+\\)$" nil t)
              collect (match-string-no-properties 1))))
+
+(defun emamux:window-ids ()
+  (with-temp-buffer
+    (emamux:tmux-run-command t "list-windows" "-F" "#{window_id}")
+    (split-string (buffer-string))))
 
 (defun emamux:active-window-id (windows)
   (cl-loop for window in windows
