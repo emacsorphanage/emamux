@@ -457,7 +457,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (emamux:tmux-run-command nil "new-window")
   (let ((new-window-id (emamux:current-active-window-id))
         (chdir-cmd (format " cd %s" default-directory))
-        (emacsclient-cmd " emacsclient -nw -e '(window-state-put emamux:cloning-window-state)'"))
+        (emacsclient-cmd " emacsclient -t -e '(run-with-timer 0.01 nil (lambda () (window-state-put emamux:cloning-window-state nil (quote safe))))'"))
     (emamux:send-keys chdir-cmd new-window-id)
     (emamux:send-keys emacsclient-cmd new-window-id)))
 
