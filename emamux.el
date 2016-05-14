@@ -330,7 +330,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
     (emamux:send-keys chdir-cmd (emamux:get-runner-pane-id))))
 
 (defun emamux:get-runner-pane-id ()
-  (cdr (assoc (emamux:current-active-window-id) emamux:runner-pane-id-map)))
+  (assoc-default (emamux:current-active-window-id) emamux:runner-pane-id-map))
 
 (defun emamux:add-to-assoc (key value alist-variable)
   (let* ((alist (symbol-value alist-variable))
@@ -412,10 +412,9 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 (defun emamux:runner-alive-p ()
   (let ((pane-id
-         (cdr
-          (assoc
-           (emamux:current-active-window-id)
-           emamux:runner-pane-id-map))))
+         (assoc-default
+          (emamux:current-active-window-id)
+          emamux:runner-pane-id-map)))
     (and pane-id (emamux:pane-alive-p pane-id))))
 
 (defun emamux:check-runner-alive ()
