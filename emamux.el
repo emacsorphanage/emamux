@@ -452,9 +452,11 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 ;;;###autoload
 (defun emamux:new-window ()
-  "Create new window by cd-ing to current directory."
+  "Create new window by cd-ing to current directory.
+With prefix-arg, use '-a' option to insert the new window next to current index."
   (interactive)
-  (emamux:tmux-run-command nil "new-window")
+  (apply 'emamux:tmux-run-command nil
+         "new-window" (and current-prefix-arg '("-a")))
   (let ((new-window-id (emamux:current-active-window-id))
         (chdir-cmd (format " cd %s" default-directory)))
     (emamux:send-keys chdir-cmd new-window-id)))
@@ -483,10 +485,12 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 ;;;###autoload
 (defun emamux:clone-current-frame ()
-  "Clones current frame into a new tmux window."
+  "Clones current frame into a new tmux window.
+With prefix-arg, use '-a' option to insert the new window next to current index."
   (interactive)
   (setq emamux:cloning-window-state (window-state-get (frame-root-window)))
-  (emamux:tmux-run-command nil "new-window")
+  (apply 'emamux:tmux-run-command nil
+         "new-window" (and current-prefix-arg '("-a")))
   (let ((new-window-id (emamux:current-active-window-id))
         (chdir-cmd (format " cd %s" default-directory))
         (emacsclient-cmd " emacsclient -t -e '(run-with-timer 0.01 nil (lambda () (window-state-put emamux:cloning-window-state nil (quote safe))))'"))
