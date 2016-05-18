@@ -460,7 +460,8 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
         (with-parsed-tramp-file-name
             default-directory nil
           (setq cd-to localname)
-          (setq ssh-to host))
+          (unless (string-match tramp-local-host-regexp host)
+            (setq ssh-to host)))
       (setq cd-to default-directory))
     (let ((default-directory (expand-file-name "~")))
       (apply 'emamux:tmux-run-command nil "new-window"
