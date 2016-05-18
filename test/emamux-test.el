@@ -1,6 +1,6 @@
 ;;; emamux-test.el --- Unit test for emamux.el -*- lexical-binding: t -*-
 
-;; Copyright (C) 2014 by Syohei YOSHIDA
+;; Copyright (C) 2016 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 
@@ -16,8 +16,6 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-;;; Commentary:
 
 ;;; Code:
 
@@ -47,7 +45,5 @@
 
   (let ((got (emamux:escape-semicolon "ls -l; cd /tmp")))
     (should (string= got "ls -l; cd /tmp"))))
-
-(provide 'emamux-test)
 
 ;;; emamux-test.el ends here
