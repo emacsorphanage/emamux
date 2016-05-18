@@ -39,6 +39,8 @@
 
 (require 'cl-lib)
 
+(declare-function with-parsed-tramp-file-name "tramp")
+
 (defgroup emamux nil
   "tmux manipulation from Emacs"
   :prefix "emamux:"
