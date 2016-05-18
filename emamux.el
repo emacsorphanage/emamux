@@ -49,18 +49,15 @@
 (defcustom emamux:default-orientation 'vertical
   "Orientation of spliting runner pane"
   :type '(choice (const :tag "Split pane vertial" vertical)
-                 (const :tag "Split pane horizonal" horizonal))
-  :group 'emamux)
+                 (const :tag "Split pane horizonal" horizonal)))
 
 (defcustom emamux:runner-pane-height 20
   "Orientation of spliting runner pane"
-  :type  'integer
-  :group 'emamux)
+  :type  'integer)
 
 (defcustom emamux:use-nearest-pane nil
   "Use nearest pane for runner pane"
-  :type  'boolean
-  :group 'emamux)
+  :type  'boolean)
 
 (defsubst emamux:helm-mode-enabled-p ()
   (and (featurep 'helm) helm-mode))
@@ -74,8 +71,7 @@
 For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   :type '(choice (const :tag "Using completing-read" 'normal)
                  (const :tag "Using ido-completing-read" 'ido)
-                 (const :tag "Using helm completion" 'helm))
-  :group 'emamux)
+                 (const :tag "Using helm completion" 'helm)))
 
 (defvar emamux:last-command nil
   "Last emit command")
