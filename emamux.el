@@ -455,11 +455,22 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   "Create new window by cd-ing to current directory.
 With prefix-arg, use '-a' option to insert the new window next to current index."
   (interactive)
-  (apply 'emamux:tmux-run-command nil
-         "new-window" (and current-prefix-arg '("-a")))
-  (let ((new-window-id (emamux:current-active-window-id))
-        (chdir-cmd (format " cd %s" default-directory)))
-    (emamux:send-keys chdir-cmd new-window-id)))
+  (let (cd-to ssh-to)
+    (if (file-remote-p default-directory)
+        (with-parsed-tramp-file-name
+            default-directory nil
+          (setq cd-to localname)
+          (unless (string-match tramp-local-host-regexp host)
+            (setq ssh-to host)))
+      (setq cd-to default-directory))
+    (let ((default-directory (expand-file-name "~")))
+      (apply 'emamux:tmux-run-command nil "new-window"
+             (and current-prefix-arg '("-a")))
+      (let ((new-window-id (emamux:current-active-window-id))
+            (chdir-cmd (format " cd %s" cd-to)))
+        (if ssh-to
+            (emamux:send-keys (format " ssh %s" ssh-to) new-window-id))
+        (emamux:send-keys chdir-cmd new-window-id)))))
 
 (defun emamux:list-windows ()
   (with-temp-buffer
