@@ -120,6 +120,31 @@ It is useful for using `emamux` to show `session name`, `window index` and
 set-option -g status-right '[#h###S:#I:#P]'
 ```
 
+## Default keymap
+
+`emamux` defines default keymap. You can use it by following configuration.
+
+```lisp
+;; Bind keymap prefix to Ctrl-z
+(global-set-key (kbd "C-z") emamux:keymap)
+```
+
+Default keymap is as bellow.
+
+| Key                   | Command                       |
+|:---------------------:|:------------------------------|
+| <kbd>Prefix C-s</kbd> | emamux:send-command           |
+| <kbd>Prefix C-y</kbd> | emamux:yank-from-list-buffers |
+| <kbd>Prefix M-!</kbd> | emamux:run-command            |
+| <kbd>Prefix M-r</kbd> | emamux:run-last-command       |
+| <kbd>Prefix C-i</kbd> | emamux:inspect-runner         |
+| <kbd>Prefix C-k</kbd> | emamux:close-panes            |
+| <kbd>Prefix C-c</kbd> | emamux:interrupt-runner       |
+| <kbd>Prefix M-k</kbd> | emamux:clear-runner-history   |
+| <kbd>Prefix c</kbd>   | emamux:new-window             |
+| <kbd>Prefix C</kbd>   | emamux:clone-current-frame    |
+
+
 ## Sample configuration
 
 ```lisp
