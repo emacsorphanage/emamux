@@ -517,6 +517,12 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
   (emamux:ensure-ssh-and-cd
    (emamux:tmux-run-command nil "split-window")))
 
+;;;###autoload
+(defun emamux:split-window-horizontally ()
+  (interactive)
+  (emamux:ensure-ssh-and-cd
+   (emamux:tmux-run-command nil "split-window" "-h")))
+
 (defvar emamux:keymap
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-s" #'emamux:send-command)
@@ -530,26 +536,28 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
       (define-key map "\M-k" #'emamux:clear-runner-history)
       (define-key map "c"    #'emamux:new-window)
       (define-key map "C"    #'emamux:clone-current-frame)
-      (define-key map "2"    #'emamux:split-window))
+      (define-key map "2"    #'emamux:split-window)
+      (define-key map "3"    #'emamux:split-window-horizontally))
     map)
   "Default keymap for emamux commands. Use like
 \(global-set-key (kbd \"M-g\") emamux:keymap\)
 
 Keymap:
 
-| Key | Command                       |
-|-----+-------------------------------|
-| C-s | emamux:send-command           |
-| C-y | emamux:yank-from-list-buffers |
-| M-! | emamux:run-command            |
-| M-r | emamux:run-last-command       |
-| C-i | emamux:inspect-runner         |
-| C-k | emamux:close-panes            |
-| C-c | emamux:interrupt-runner       |
-| M-k | emamux:clear-runner-history   |
-| c   | emamux:new-window             |
-| C   | emamux:clone-current-frame    |
-| 2   | emamux:split-window           |
+| Key | Command                          |
+|-----+----------------------------------|
+| C-s | emamux:send-command              |
+| C-y | emamux:yank-from-list-buffers    |
+| M-! | emamux:run-command               |
+| M-r | emamux:run-last-command          |
+| C-i | emamux:inspect-runner            |
+| C-k | emamux:close-panes               |
+| C-c | emamux:interrupt-runner          |
+| M-k | emamux:clear-runner-history      |
+| c   | emamux:new-window                |
+| C   | emamux:clone-current-frame       |
+| 2   | emamux:split-window              |
+| 3   | emamux:split-window-horizontally |
 ")
 
 (provide 'emamux)
