@@ -529,8 +529,8 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
       (define-key map "\C-c" #'emamux:interrupt-runner)
       (define-key map "\M-k" #'emamux:clear-runner-history)
       (define-key map "c"    #'emamux:new-window)
-      (define-key map "C"    #'emamux:clone-current-frame))
-      (define-key map "2"    #'emamux:split-window)
+      (define-key map "C"    #'emamux:clone-current-frame)
+      (define-key map "2"    #'emamux:split-window))
     map)
   "Default keymap for emamux commands. Use like
 \(global-set-key (kbd \"M-g\") emamux:keymap\)
