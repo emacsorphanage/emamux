@@ -448,27 +448,32 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   (emamux:check-runner-alive)
   (emamux:tmux-run-command nil "resize-pane" "-Z" "-t" (emamux:get-runner-pane-id)))
 
+(defmacro emamux:ensure-ssh-and-cd (&rest body)
+  "Do whatever the operation, and send keys of ssh and cd according to the `default-directory'."
+  `(let (cd-to ssh-to)
+     (if (file-remote-p default-directory)
+         (with-parsed-tramp-file-name
+             default-directory nil
+           (setq cd-to localname)
+           (unless (string-match tramp-local-host-regexp host)
+             (setq ssh-to host)))
+       (setq cd-to default-directory))
+     (let ((default-directory (expand-file-name "~")))
+       ,@body
+       (let ((new-pane-id (emamux:current-active-pane-id))
+             (chdir-cmd (format " cd %s" cd-to)))
+         (if ssh-to
+             (emamux:send-keys (format " ssh %s" ssh-to) new-pane-id))
+         (emamux:send-keys chdir-cmd new-pane-id)))))
+
 ;;;###autoload
 (defun emamux:new-window ()
   "Create new window by cd-ing to current directory.
 With prefix-arg, use '-a' option to insert the new window next to current index."
   (interactive)
-  (let (cd-to ssh-to)
-    (if (file-remote-p default-directory)
-        (with-parsed-tramp-file-name
-            default-directory nil
-          (setq cd-to localname)
-          (unless (string-match tramp-local-host-regexp host)
-            (setq ssh-to host)))
-      (setq cd-to default-directory))
-    (let ((default-directory (expand-file-name "~")))
-      (apply 'emamux:tmux-run-command nil "new-window"
-             (and current-prefix-arg '("-a")))
-      (let ((new-window-id (emamux:current-active-window-id))
-            (chdir-cmd (format " cd %s" cd-to)))
-        (if ssh-to
-            (emamux:send-keys (format " ssh %s" ssh-to) new-window-id))
-        (emamux:send-keys chdir-cmd new-window-id)))))
+  (emamux:ensure-ssh-and-cd
+   (apply 'emamux:tmux-run-command nil "new-window"
+          (and current-prefix-arg '("-a")))))
 
 (defun emamux:list-windows ()
   (with-temp-buffer
@@ -506,6 +511,12 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
     (emamux:send-keys chdir-cmd new-window-id)
     (emamux:send-keys emacsclient-cmd new-window-id)))
 
+;;;###autoload
+(defun emamux:split-window ()
+  (interactive)
+  (emamux:ensure-ssh-and-cd
+   (emamux:tmux-run-command nil "split-window")))
+
 (defvar emamux:keymap
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-s" #'emamux:send-command)
@@ -519,6 +530,7 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
       (define-key map "\M-k" #'emamux:clear-runner-history)
       (define-key map "c"    #'emamux:new-window)
       (define-key map "C"    #'emamux:clone-current-frame))
+      (define-key map "2"    #'emamux:split-window)
     map)
   "Default keymap for emamux commands. Use like
 \(global-set-key (kbd \"M-g\") emamux:keymap\)
@@ -537,6 +549,7 @@ Keymap:
 | M-k | emamux:clear-runner-history   |
 | c   | emamux:new-window             |
 | C   | emamux:clone-current-frame    |
+| 2   | emamux:split-window           |
 ")
 
 (provide 'emamux)
