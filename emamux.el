@@ -38,8 +38,7 @@
   (defvar helm-mode))
 
 (require 'cl-lib)
-
-(declare-function with-parsed-tramp-file-name "tramp")
+(require 'tramp)
 
 (defgroup emamux nil
   "tmux manipulation from Emacs"
@@ -450,6 +449,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
 
 (defmacro emamux:ensure-ssh-and-cd (&rest body)
   "Do whatever the operation, and send keys of ssh and cd according to the `default-directory'."
+  (cl-declare (special localname host))
   `(let (cd-to ssh-to)
      (if (file-remote-p default-directory)
          (with-parsed-tramp-file-name
