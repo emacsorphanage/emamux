@@ -559,6 +559,7 @@ Keymap:
 | C-y | emamux:yank-from-list-buffers    |
 | M-! | emamux:run-command               |
 | M-r | emamux:run-last-command          |
+| M-s | emamux:region                    |
 | C-i | emamux:inspect-runner            |
 | C-k | emamux:close-panes               |
 | C-c | emamux:interrupt-runner          |

@@ -131,18 +131,21 @@ set-option -g status-right '[#h###S:#I:#P]'
 
 Default keymap is as bellow.
 
-| Key                   | Command                       |
-|:---------------------:|:------------------------------|
-| <kbd>Prefix C-s</kbd> | emamux:send-command           |
-| <kbd>Prefix C-y</kbd> | emamux:yank-from-list-buffers |
-| <kbd>Prefix M-!</kbd> | emamux:run-command            |
-| <kbd>Prefix M-r</kbd> | emamux:run-last-command       |
-| <kbd>Prefix C-i</kbd> | emamux:inspect-runner         |
-| <kbd>Prefix C-k</kbd> | emamux:close-panes            |
-| <kbd>Prefix C-c</kbd> | emamux:interrupt-runner       |
-| <kbd>Prefix M-k</kbd> | emamux:clear-runner-history   |
-| <kbd>Prefix c</kbd>   | emamux:new-window             |
-| <kbd>Prefix C</kbd>   | emamux:clone-current-frame    |
+| Key                   | Command                          |
+|:---------------------:|:---------------------------------|
+| <kbd>Prefix C-s</kbd> | emamux:send-command              |
+| <kbd>Prefix C-y</kbd> | emamux:yank-from-list-buffers    |
+| <kbd>Prefix M-!</kbd> | emamux:run-command               |
+| <kbd>Prefix M-r</kbd> | emamux:run-last-command          |
+| <kbd>Prefix M-s</kbd> | emamux:run-region                |
+| <kbd>Prefix C-i</kbd> | emamux:inspect-runner            |
+| <kbd>Prefix C-k</kbd> | emamux:close-panes               |
+| <kbd>Prefix C-c</kbd> | emamux:interrupt-runner          |
+| <kbd>Prefix M-k</kbd> | emamux:clear-runner-history      |
+| <kbd>Prefix c</kbd>   | emamux:new-window                |
+| <kbd>Prefix C</kbd>   | emamux:clone-current-frame       |
+| <kbd>Prefix 2</kbd>   | emamux:split-window              |
+| <kbd>Prefix 3</kbd>   | emamux:split-window-horizontally |
 
 
 ## Sample configuration
