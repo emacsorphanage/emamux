@@ -523,6 +523,14 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
   (emamux:ensure-ssh-and-cd
    (emamux:tmux-run-command nil "split-window" "-h")))
 
+;;;###autoload
+(defun emamux:run-region (beg end)
+  "Send region to runner pane."
+  (interactive "r")
+  (let ((input (buffer-substring-no-properties beg end)))
+    (emamux:run-command input)))
+
+
 (defvar emamux:keymap
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-s" #'emamux:send-command)
@@ -530,6 +538,7 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
     (when (emamux:in-tmux-p)
       (define-key map "\M-!" #'emamux:run-command)
       (define-key map "\M-r" #'emamux:run-last-command)
+      (define-key map "\M-s" #'emamux:run-region)
       (define-key map "\C-i" #'emamux:inspect-runner)
       (define-key map "\C-k" #'emamux:close-panes)
       (define-key map "\C-c" #'emamux:interrupt-runner)
