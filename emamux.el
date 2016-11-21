@@ -76,8 +76,17 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
   "^\\([0-9]+\\): +\\([0-9]+\\) +\\(bytes\\): +[\"]\\(.*\\)[\"]"
   "Regexp used to match buffers entries in output of tmux command `get-buffers'.
 The entry selected should be the subexp 4 of regexp.
-NOTE that on last version of tmux each line start with \"buffer\"."
+NOTE that on last versions of tmux (2.0+) each line start with \"buffer\", so regexp
+should be:
+    \"^\\(buffer[0-9]+\\): +\\([0-9]+\\) +\\(bytes\\): +[\"]\\(.*\\)[\"]\""
   :type 'regexp)
+
+(defcustom emamux:show-buffers-with-index t
+  "Pass INDEX (a number) as argument to tmux command show-buffer when non-nil.
+Tmux versions >= 2.0 expect a buffer name whereas versions < 2.0 require an index.
+Use nil when using recent tmux versions, the `emamux:get-buffers-regexp' should
+match \"buffer[0-9]+\" in its first subexp as well."
+  :type 'boolean)
 
 (defvar emamux:last-command nil
   "Last emit command")
@@ -175,11 +184,15 @@ NOTE that on last version of tmux each line start with \"buffer\"."
           (re-search-forward emamux:get-buffers-regexp nil t)
           collect (cons (replace-regexp-in-string
                          "\\s\\" "" (match-string-no-properties 4))
-                        count))))
+                        (if emamux:show-buffers-with-index
+                            count
+                            (match-string-no-properties 1))))))
 
 (defun emamux:show-buffer (index)
   (with-temp-buffer
-    (emamux:tmux-run-command t "show-buffer" "-b" (number-to-string index))
+    (emamux:tmux-run-command t "show-buffer" "-b" (if emamux:show-buffers-with-index
+                                                      (number-to-string index)
+                                                      index))
     (buffer-substring-no-properties (point-min) (point-max))))
 
 (defun emamux:get-window ()
