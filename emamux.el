@@ -72,6 +72,13 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
                  (const :tag "Using ido-completing-read" 'ido)
                  (const :tag "Using helm completion" 'helm)))
 
+(defcustom emamux:get-buffers-regexp
+  "^\\([0-9]+\\): +\\([0-9]+\\) +\\(bytes\\): +[\"]\\(.*\\)[\"]"
+  "Regexp used to match buffers entries in output of tmux command `get-buffers'.
+The entry selected should be the subexp 4 of regexp.
+NOTE that on last version of tmux each line start with \"buffer\"."
+  :type 'regexp)
+
 (defvar emamux:last-command nil
   "Last emit command")
 
@@ -165,8 +172,7 @@ For helm completion use either `normal' or `helm' and turn on `helm-mode'."
     (emamux:tmux-run-command t "list-buffers")
     (goto-char (point-min))
     (cl-loop for count from 0 while
-          (re-search-forward
-           "^\\([0-9]+\\): +\\([0-9]+\\) +\\(bytes\\): +[\"]\\(.*\\)[\"]" nil t)
+          (re-search-forward emamux:get-buffers-regexp nil t)
           collect (cons (replace-regexp-in-string
                          "\\s\\" "" (match-string-no-properties 4))
                         count))))
