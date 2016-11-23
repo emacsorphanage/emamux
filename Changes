@@ -1,5 +1,12 @@
 Revision history for emamux.el
 
+0.14 2016-11-23
+  - Fix tmux show-buffers command on last tmux versions
+  - Add emamux:run-region
+  - Support spliting window horizontally
+  - Add default mapping
+  - Implement send region command
+
 0.13 2014-10-28
   - Drop Emacs 23 support
 
