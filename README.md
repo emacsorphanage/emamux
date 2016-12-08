@@ -129,7 +129,7 @@ set-option -g status-right '[#h###S:#I:#P]'
 (global-set-key (kbd "C-z") emamux:keymap)
 ```
 
-Default keymap is as bellow.
+Default keymap is as below.
 
 | Key                   | Command                          |
 |:---------------------:|:---------------------------------|
