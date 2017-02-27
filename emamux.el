@@ -332,6 +332,22 @@ match \"buffer[0-9]+\" in its first subexp as well."
     (emamux:select-pane current-pane)))
 
 ;;;###autoload
+(defun emamux:run-in-pane (cmd)
+  "Run command anywhere"
+  (interactive
+   (list (emamux:read-command "Run command: " nil)))
+  (emamux:check-tmux-running)
+  (unless (emamux:in-tmux-p)
+	(error "You are not in 'tmux'"))
+  (emamux:gc-runner-pane-map)
+  (progn
+	(if (or current-prefix-arg (not (emamux:set-parameters-p)))
+		(emamux:set-parameters))
+	(let ((current-pane (emamux:current-active-pane-id)))
+	  (emamux:send-keys cmd (emamux:target-session))
+	  (emamux:select-pane current-pane))))
+
+;;;###autoload
 (defun emamux:run-last-command ()
   (interactive)
   (unless emamux:last-command
