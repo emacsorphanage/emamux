@@ -469,20 +469,25 @@ match \"buffer[0-9]+\" in its first subexp as well."
 (defmacro emamux:ensure-ssh-and-cd (&rest body)
   "Do whatever the operation, and send keys of ssh and cd according to the `default-directory'."
   (cl-declare (special localname host))
-  `(let (cd-to ssh-to)
+  `(let (cd-to ssh-to ssh-user)
      (if (file-remote-p default-directory)
          (with-parsed-tramp-file-name
              default-directory nil
            (setq cd-to localname)
            (unless (string-match tramp-local-host-regexp host)
-             (setq ssh-to host)))
+             (setq ssh-to host)
+             (setq ssh-user user)))
        (setq cd-to default-directory))
      (let ((default-directory (expand-file-name "~")))
        ,@body
        (let ((new-pane-id (emamux:current-active-pane-id))
              (chdir-cmd (format " cd %s" cd-to)))
          (if ssh-to
-             (emamux:send-keys (format " ssh %s" ssh-to) new-pane-id))
+             (emamux:send-keys
+              (format " ssh %s%s"
+                      (if ssh-user (concat ssh-user "@") "")
+                      ssh-to)
+              new-pane-id))
          (emamux:send-keys chdir-cmd new-pane-id)))))
 
 ;;;###autoload
