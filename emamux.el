@@ -40,6 +40,8 @@
 (require 'cl-lib)
 (require 'tramp)
 
+(with-eval-after-load "emamux" (emamux:setup-hooks))
+
 (defgroup emamux nil
   "tmux manipulation from Emacs"
   :prefix "emamux:"
@@ -554,6 +556,17 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
   (let ((input (buffer-substring-no-properties beg end)))
     (emamux:run-command input)))
 
+(defun emamux:set-title-string (title)
+  (emamux:tmux-run-command nil "rename-window" title)
+  (emamux:tmux-run-command nil "select-pane" "-T" title))
+
+(defun emamux-hook-buffer-change (frame)
+  (if (buffer-name)
+    (emamux:set-title-string (buffer-name))))
+
+(defun emamux:setup-hooks ()
+  (add-hook 'window-buffer-change-functions 'emamux-hook-buffer-change)
+  (add-hook 'window-selection-change-functions 'emamux-hook-buffer-change))
 
 (defvar emamux:keymap
   (let ((map (make-sparse-keymap)))
