@@ -94,8 +94,10 @@ match \"buffer[0-9]+\" in its first subexp as well."
 (defvar emamux:session nil)
 (defvar emamux:window nil)
 (defvar emamux:pane nil)
+(defvar emamux:socket-path nil)
 
 (defsubst emamux:tmux-running-p ()
+  (emamux:find-socket-path)
   (zerop (process-file "tmux" nil nil nil "has-session")))
 
 (defun emamux:tmux-run-command (output &rest args)
@@ -104,6 +106,11 @@ match \"buffer[0-9]+\" in its first subexp as well."
       (error (format "Failed: %s(status = %d)"
                      (mapconcat 'identity (cons "tmux" args) " ")
                      retval)))))
+
+(defun emamux:tmux-args-with-socket-path(args)
+  (if (emamux:in-tmux-p)
+    args
+    (append '("-S" emamux:socket-path) args)))
 
 (defun emamux:set-parameters ()
   (emamux:set-parameter-session)
@@ -301,7 +308,19 @@ match \"buffer[0-9]+\" in its first subexp as well."
   (let ((args (emamux:set-buffer-argument index data)))
     (apply 'emamux:tmux-run-command nil "set-buffer" args)))
 
-(defun emamux:in-tmux-p ()
+(defun emamux:find-socket-path()
+  (with-temp-buffer
+    (let ((retval (process-file "tmux" nil t nil "list-sessions" "-F" "#{socket_path}")))
+      (unless (zerop retval)
+        (error (format "Failed: list-sessions(status = %d)" retval)))
+      (goto-char (point-min))
+      (setq emamux:socket-path (string-trim (buffer-string))))))
+
+(defun emamux:has-tmux-p ()
+  (or (not (eq emamux:socket-path nil))
+      (emamux:in-tmux-p)))
+
+(defun emamux:in-tmux-p()
   (and (not (display-graphic-p))
        (getenv "TMUX")))
 
@@ -321,7 +340,7 @@ match \"buffer[0-9]+\" in its first subexp as well."
   (interactive
    (list (emamux:read-command "Run command: " nil)))
   (emamux:check-tmux-running)
-  (unless (emamux:in-tmux-p)
+  (unless (emamux:has-tmux-p)
     (error "You are not in 'tmux'"))
   (emamux:gc-runner-pane-map)
   (let ((current-pane (emamux:current-active-pane-id)))
@@ -559,7 +578,7 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-s" #'emamux:send-command)
     (define-key map "\C-y" #'emamux:yank-from-list-buffers)
-    (when (emamux:in-tmux-p)
+    (when (emamux:has-tmux-p)
       (define-key map "\M-!" #'emamux:run-command)
       (define-key map "\M-r" #'emamux:run-last-command)
       (define-key map "\M-s" #'emamux:run-region)
