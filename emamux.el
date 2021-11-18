@@ -501,7 +501,7 @@ With prefix-arg, use '-a' option to insert the new window next to current index.
 
 (defun emamux:list-windows ()
   (with-temp-buffer
-    (emamux:tmux-run-command t "list-windows")
+    (emamux:tmux-run-command t "list-windows" "-t" emamux:session)
     (cl-loop initially (goto-char (point-min))
              while (re-search-forward "^\\(.+\\)$" nil t)
              collect (match-string-no-properties 1))))
