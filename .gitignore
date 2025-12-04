@@ -1,2 +1,3 @@
-/.cask/
+/.eask
+/dist
 *.elc
