@@ -4,7 +4,7 @@
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; Maintainer: Jen-Chieh Shen <jcs090218@gmail.com>
-;; URL: https://github.com/emacsorphanage/emacs-emamux
+;; URL: https://github.com/emacsorphanage/emamux
 ;; Version: 0.14
 ;; Package-Requires: ((emacs "26.1"))
 ;; Keywords: unix
@@ -31,7 +31,7 @@
 ;;
 ;;    (require 'emamux)
 ;;
-;; Please see https://github.com/syohex/emacs-emamux/
+;; Please see https://github.com/emacsorphanage/emamux/
 ;; for more information.
 
 ;;; Code:

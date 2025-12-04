@@ -4,7 +4,7 @@
          "0.14"
          "Interact with tmux")
 
-(website-url "https://github.com/emacsorphanage/emacs-emamux")
+(website-url "https://github.com/emacsorphanage/emamux")
 (keywords "unix")
 
 (package-file "emamux.el")
