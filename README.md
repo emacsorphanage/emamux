@@ -1,19 +1,19 @@
-# emamux.el [![melpa badge][melpa-badge]][melpa-link] [![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
+[![melpa badge][melpa-badge]][melpa-link]
+[![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
+
+# emamux.el
 
 Interact with tmux from Emacs.
-
 
 ## Screenshot
 
 ![emamux_run_command](image/run_command_screenshot.png)
-
 
 ## Introduction
 
 **emamux.el** let emacs interact with **tmux**.
 **emamux.el** is inspired by [tslime.vim](https://github.com/kikijump/tslime.vim) and
 [vimux](https://github.com/benmills/vimux/).
-
 
 ## Installation
 
@@ -23,12 +23,10 @@ You can install `emamux` with the following command.
 
 <kbd>M-x package-install [RET] emamux [RET]</kbd>
 
-
 ## Requirements
 
-* Emacs 24 or higher.
+* Emacs 26 or higher.
 * tmux 1.5
-
 
 ## Basic Usage
 
@@ -46,7 +44,6 @@ You can change default **target-session** with `C-u` prefix.
 #### `emamux:yank-from-list-buffers`
 
 Yank from `tmux` buffer.
-
 
 #### `emamux:copy-kill-ring`
 
@@ -88,7 +85,6 @@ Interrupt command which is running in `runner-pane`.
 #### `emamux:clear-runner-history`
 
 Clear tmux history in `runner-pane`
-
 
 ## Customize
 
@@ -147,7 +143,6 @@ Default keymap is as below.
 | <kbd>Prefix 2</kbd>   | emamux:split-window              |
 | <kbd>Prefix 3</kbd>   | emamux:split-window-horizontally |
 
-
 ## Sample configuration
 
 ```lisp
@@ -157,13 +152,16 @@ Default keymap is as below.
 
 ## Emamux Applications
 
-* [emamux-perl-test](https://github.com/syohex/emamux-perl-test) a set of commands to easily run perl tests
-* [emamux-ruby-test](https://github.com/syohex/emamux-ruby-test) a set of commands to easily run ruby tests
-
+* [emamux-perl-test](https://github.com/emacsorphanage/emamux-perl-test) a set of commands to easily run perl tests
+* [emamux-ruby-test](https://github.com/emacsorphanage/emamux-ruby-test) a set of commands to easily run ruby tests
 
 ## See Also
+
 * [vimux](https://github.com/benmills/vimux/)
 * [tslime.vim](https://github.com/kikijump/tslime.vim)
+
+
+<!-- Links -->
 
 [melpa-link]: https://melpa.org/#/emamux
 [melpa-stable-link]: https://stable.melpa.org/#/emamux
