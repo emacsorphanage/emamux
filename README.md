@@ -1,5 +1,6 @@
-[![melpa badge][melpa-badge]][melpa-link]
-[![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
+[![MELPA](https://melpa.org/packages/emamux-badge.svg)](https://melpa.org/#/emamux)
+[![MELPA Stable](https://stable.melpa.org/packages/emamux-badge.svg)](https://stable.melpa.org/#/emamux)
+[![CI](https://github.com/emacsorphanage/emamux/actions/workflows/test.yml/badge.svg)](https://github.com/emacsorphanage/emamux/actions/workflows/test.yml)
 
 # emamux.el
 
@@ -159,11 +160,3 @@ Default keymap is as below.
 
 * [vimux](https://github.com/benmills/vimux/)
 * [tslime.vim](https://github.com/kikijump/tslime.vim)
-
-
-<!-- Links -->
-
-[melpa-link]: https://melpa.org/#/emamux
-[melpa-stable-link]: https://stable.melpa.org/#/emamux
-[melpa-badge]: https://melpa.org/packages/emamux-badge.svg
-[melpa-stable-badge]: https://stable.melpa.org/packages/emamux-badge.svg
